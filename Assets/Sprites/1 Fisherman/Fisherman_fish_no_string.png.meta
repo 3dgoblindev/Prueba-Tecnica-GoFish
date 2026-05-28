@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6ef10a2b60517394ab36ebb97fc3e44e
+guid: 1f4d6da3314e9f4469ccf938d164bd4c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Fisherman_idle_0
+      name: Fisherman_fish_no_string_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2fe81d4a9bdf9154f9554e5a8b1339cb
-      internalID: -1633412848
+      spriteID: af3a03c5253ae4c4cb579f07d1a79359
+      internalID: 1093708849
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fisherman_idle_1
+      name: Fisherman_fish_no_string_1
       rect:
         serializedVersion: 2
         x: 48
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 48db208b9bafbd44391fa35bccc89755
-      internalID: -1840549186
+      spriteID: 78d0f922076b5f644be85000842738f0
+      internalID: 1447234455
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fisherman_idle_2
+      name: Fisherman_fish_no_string_2
       rect:
         serializedVersion: 2
         x: 96
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a3b079550612b64daab9be0331204dc
-      internalID: -1903517614
+      spriteID: 33697f163b250ba47b8439b00f66433b
+      internalID: 1154507767
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Fisherman_idle_3
+      name: Fisherman_fish_no_string_3
       rect:
         serializedVersion: 2
         x: 144
@@ -187,8 +187,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 542f3ab111ef6944293906aabb904e99
-      internalID: 1669514209
+      spriteID: 2115898f95509f84ea055f560a41dce8
+      internalID: 193178309
       vertices: []
       indices: 
       edges: []
@@ -204,10 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Fisherman_idle_0: -1633412848
-      Fisherman_idle_1: -1840549186
-      Fisherman_idle_2: -1903517614
-      Fisherman_idle_3: 1669514209
+      Fisherman_fish_no_string_0: 1093708849
+      Fisherman_fish_no_string_1: 1447234455
+      Fisherman_fish_no_string_2: 1154507767
+      Fisherman_fish_no_string_3: 193178309
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
