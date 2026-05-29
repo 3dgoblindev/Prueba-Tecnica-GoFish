@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Handles player input and initiates the fishing sequence.
@@ -42,10 +43,17 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Only process the throw input if the player is currently idle (!isFishing)
-        if (Input.GetMouseButtonDown(0) && !isFishing)
+        if (Input.GetMouseButtonDown(0))
         {
-            ThrowHook();
+            if (IsPointerOverUI())
+            {
+                return;
+            }
+
+            if (!isFishing)
+            {
+                ThrowHook();
+            }
         }
     }
 
@@ -88,5 +96,29 @@ public class PlayerController : MonoBehaviour
     public void OnFishingSequenceEnded()
     {
         isFishing = false;
+    }
+
+    private bool IsPointerOverUI()
+    {
+        // Medida de seguridad
+        if (EventSystem.current == null) return false;
+
+        // 1. Comprobar clic de ratón (PC / Editor)
+        if (EventSystem.current.IsPointerOverGameObject())
+            return true;
+
+        // 2. Comprobar toques en pantalla (Móvil)
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                // Le pasamos el ID del dedo al EventSystem
+                if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                    return true;
+            }
+        }
+
+        return false;
     }
 }

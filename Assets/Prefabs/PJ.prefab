@@ -172,6 +172,7 @@ MonoBehaviour:
   ascentSpeed: 5
   maxDepth: -10
   horizontalResponsiveness: 10
+  maxFishCapacity: 3
 --- !u!50 &4734176172242584666
 Rigidbody2D:
   serializedVersion: 4
@@ -198,7 +199,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &3792322999297878653
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -260,7 +261,7 @@ Transform:
   m_GameObject: {fileID: 4688724864820554540}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.445, y: 0.27960467, z: -0.05638028}
+  m_LocalPosition: {x: -1.445, y: 0.27960467, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

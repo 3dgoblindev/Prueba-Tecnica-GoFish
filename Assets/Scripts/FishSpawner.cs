@@ -13,6 +13,7 @@ public class FishSpawner : MonoBehaviour
 
     [Header("Spawn Configuration")]
     [Tooltip("The maximum depth the player can currently reach. Should be synced with player stats.")]
+    [SerializeField] private float minCastDepth = -1f;
     [SerializeField] private float currentMaxCastDepth = -15f;
 
     [Tooltip("How many fishes to spawn per 1 unit of depth. Controls the visual density.")]
