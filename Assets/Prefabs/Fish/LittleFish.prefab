@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 6631937838306135784}
   - component: {fileID: 3968896552167692567}
   - component: {fileID: 4730662503029716073}
-  - component: {fileID: 1646469752688057134}
-  - component: {fileID: 5168860661179055334}
+  - component: {fileID: 678015281756906574}
+  - component: {fileID: -6720062508112451004}
   m_Layer: 0
-  m_Name: Ray
+  m_Name: LittleFish
   m_TagString: Fish
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -275668870, guid: 89edb61f926f55b4caed1b0a56f3dec0, type: 3}
+  m_Sprite: {fileID: 1656605022, guid: d658619b4520ac7408d8133a25315a66, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -121,8 +121,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.36, y: 0.05}
-  m_Size: {x: 1.05, y: 0.48}
+  m_Offset: {x: -0.12, y: 0.05}
+  m_Size: {x: 0.49, y: 0.37}
   m_Direction: 1
 --- !u!114 &3968896552167692567
 MonoBehaviour:
@@ -136,8 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7021488eb90d5d4c97b50a78caa4e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 1da2463ea50e7ad468890554e9908df1, type: 2}
-  catchFeel: {fileID: 5168860661179055334}
+  data: {fileID: 11400000, guid: 30de81cd4d18a264bb15bb4e73b7b2c1, type: 2}
+  catchFeel: {fileID: -6720062508112451004}
   moveDirection: 1
 --- !u!50 &4730662503029716073
 Rigidbody2D:
@@ -166,7 +166,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!95 &1646469752688057134
+--- !u!95 &678015281756906574
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
@@ -176,7 +176,7 @@ Animator:
   m_GameObject: {fileID: 9135942315023837214}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 05bf81396f19fa248aceb71ddf9217a8, type: 2}
+  m_Controller: {fileID: 9100000, guid: 535c76c74acc95149ac15b51a314e805, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -187,7 +187,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5168860661179055334
+--- !u!114 &-6720062508112451004
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,9 +1,9 @@
 using UnityEngine;
-using TMPro; // Requerido para TextMeshPro
+using TMPro;
 
 /// <summary>
 /// Listens to the HookController's depth changes and updates the UI text.
-/// Formats the float into a clean integer with an 'm' suffix (e.g., "150m").
+/// Formats the float into a "current/max m" format (e.g., "15/150m").
 /// </summary>
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DepthLabel : MonoBehaviour
@@ -26,12 +26,21 @@ public class DepthLabel : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the text component. Rounds the depth to avoid flickering decimals.
+    /// Updates the text component to show current depth vs maximum depth.
     /// </summary>
     private void UpdateText(float currentDepth)
     {
-        // Usamos Mathf.RoundToInt para un visual más limpio.
         int roundedDepth = Mathf.RoundToInt(currentDepth);
-        depthText.text = $"{roundedDepth}m";
+        int maxDepth = 0;
+
+        // Recuperamos la profundidad máxima del archivo de guardado
+        if (SavesManager.Instance != null && SavesManager.Instance.currentData != null)
+        {
+            // Usamos Mathf.Abs para asegurar que el número se vea positivo en la UI
+            maxDepth = Mathf.RoundToInt(Mathf.Abs(SavesManager.Instance.currentData.maxDepth));
+        }
+
+        // Actualizamos el texto con el nuevo formato
+        depthText.text = $"{roundedDepth}/{maxDepth}m";
     }
 }

@@ -121,6 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 6870088341041072491}
+  castFeel: {fileID: 0}
 --- !u!1 &3609778023584108623
 GameObject:
   m_ObjectHideFlags: 0
@@ -170,6 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   descentSpeed: 15
   ascentSpeed: 5
+  rapidAscentSpeed: 15
   maxDepth: -10
   horizontalResponsiveness: 10
   maxFishCapacity: 3

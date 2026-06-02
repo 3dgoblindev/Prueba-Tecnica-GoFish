@@ -10,6 +10,9 @@ public class FishController : MonoBehaviour
     [Tooltip("This is assigned automatically by the Spawner, or you can set it in the Prefab.")]
     public FishData data;
 
+    [Header("Juice & Feel")]
+    [SerializeField] private MiniTweenFeel catchFeel;
+
     [SerializeField] private float moveDirection = 1f;
 
     private float currentSwimSpeed;
@@ -99,6 +102,8 @@ public class FishController : MonoBehaviour
     {
         isCaught = true;
 
+        catchFeel.Play();
+
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
         GetComponent<Collider2D>().enabled = false;
@@ -106,7 +111,7 @@ public class FishController : MonoBehaviour
         transform.SetParent(hookTransform);
         transform.localPosition = Vector3.zero;
 
-        float angleOffset = Random.Range(-15f, 15f);
+        float angleOffset = Random.Range(-30f, 30f);
         transform.localRotation = Quaternion.Euler(0, 0, 90f + angleOffset);
     }
 }

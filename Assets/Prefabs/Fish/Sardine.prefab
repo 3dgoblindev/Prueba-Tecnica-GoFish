@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6631937838306135784}
   - component: {fileID: 3968896552167692567}
   - component: {fileID: 4730662503029716073}
+  - component: {fileID: 1845475177073523399}
   m_Layer: 0
   m_Name: Sardine
   m_TagString: Fish
@@ -157,6 +158,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: a95a514b59059f4499626f516340175a, type: 2}
+  catchFeel: {fileID: 1845475177073523399}
   moveDirection: 1
 --- !u!50 &4730662503029716073
 Rigidbody2D:
@@ -185,3 +187,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1845475177073523399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9135942315023837214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff351044bfd6b424bb6ad4bae12b4d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenMode: 0
+  easeType: 4
+  duration: 0.4
+  playOnEnable: 0
+  animatePosition: 0
+  positionOffset: {x: 0, y: 1, z: 0}
+  animateRotation: 0
+  rotationOffset: {x: 0, y: 0, z: 45}
+  animateScale: 1
+  targetScale: {x: 1.5, y: 1.5, z: 0.7}

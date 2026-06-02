@@ -11,8 +11,6 @@ public class SavesManager : MonoBehaviour
 
     private string saveFilePath;
 
-    // --- NUEVO EVENTO ---
-    // Pasamos el nuevo total de monedas como parámetro para que la UI no tenga ni que buscarlo
     public static event Action<int> OnCoinsChanged;
 
     private void Awake()
@@ -30,21 +28,43 @@ public class SavesManager : MonoBehaviour
         LoadGame();
     }
 
-    /// <summary>
-    /// Adds or subtracts coins, updates the UI, and saves the game automatically.
-    /// Use negative numbers to spend coins.
-    /// </summary>
+    private void Update()
+    {
+#if UNITY_EDITOR
+        // DEBUG: Dar 1000 monedas
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("[DEBUG] +1000 monedas");
+            AddCoins(1000);
+        }
+
+        // DEBUG: Borrar partida
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            Debug.Log("[DEBUG] Partida borrada");
+
+            if (File.Exists(saveFilePath))
+            {
+                File.Delete(saveFilePath);
+            }
+
+            currentData = new SavedData();
+
+            OnCoinsChanged?.Invoke(currentData.coins);
+            SaveGame();
+        }
+#endif
+    }
+
     public void AddCoins(int amount)
     {
         currentData.coins += amount;
 
-        // Evitamos que el dinero baje de 0 por seguridad
-        if (currentData.coins < 0) currentData.coins = 0;
+        if (currentData.coins < 0)
+            currentData.coins = 0;
 
-        // Avisamos a toda la UI (CoinsLabel) de que el dinero ha cambiado
         OnCoinsChanged?.Invoke(currentData.coins);
 
-        // Guardamos el progreso cada vez que la cartera cambia
         SaveGame();
     }
 

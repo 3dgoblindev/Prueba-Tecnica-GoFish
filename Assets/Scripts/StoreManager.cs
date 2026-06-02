@@ -12,6 +12,10 @@ public class StoreManager : MonoBehaviour
     [Tooltip("The main panel or parent object of the store that will be toggled on/off.")]
     [SerializeField] private GameObject storePanel;
 
+    [Header("Global Limits")]
+    [Tooltip("The absolute maximum depth the player can reach (in positive meters).")]
+    [SerializeField] private float absoluteMaxDepth = 500f; // <-- NUEVA VARIABLE
+
     [Header("Depth Upgrade")]
     [SerializeField] private Button depthButton;
     [SerializeField] private TextMeshProUGUI depthCostText;
@@ -30,11 +34,8 @@ public class StoreManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // 1. Nos suscribimos a los eventos del ciclo de juego para ocultar/mostrar la tienda
         PlayerController.OnCastCompleted += HideStore;
         HookController.OnReturnToSurface += ShowStore;
-
-        // 2. Nos suscribimos al banco para actualizar los botones si ganamos/gastamos dinero
         SavesManager.OnCoinsChanged += UpdateStoreUI;
     }
 
@@ -47,23 +48,18 @@ public class StoreManager : MonoBehaviour
 
     private void Start()
     {
-        // --- ASIGNACIÓN DE BOTONES POR CÓDIGO ---
-        // Primero limpiamos por si acaso, y luego asignamos la función
         depthButton.onClick.RemoveAllListeners();
         depthButton.onClick.AddListener(BuyDepthUpgrade);
 
         capacityButton.onClick.RemoveAllListeners();
         capacityButton.onClick.AddListener(BuyCapacityUpgrade);
 
-        // Actualizamos la interfaz por primera vez al arrancar
-        // Le pasamos el dinero actual leyendo directamente del SavesManager
         if (SavesManager.Instance != null)
         {
             UpdateStoreUI(SavesManager.Instance.currentData.coins);
         }
     }
 
-    // --- LÓGICA DE OCULTAR/MOSTRAR ---
     private void HideStore()
     {
         if (storePanel != null) storePanel.SetActive(false);
@@ -74,42 +70,38 @@ public class StoreManager : MonoBehaviour
         if (storePanel != null) storePanel.SetActive(true);
     }
 
-    // --- LÓGICA DE PRECIOS DINÁMICOS ---
-    // Estas funciones calculan el precio basándose en el nivel actual. 
-    // Puedes cambiar las matemáticas aquí a lo que mejor se ajuste a tu economía.
     private int GetDepthCost()
     {
         float currentDepth = Mathf.Abs(SavesManager.Instance.currentData.maxDepth);
-        return Mathf.RoundToInt(currentDepth * 10f); // Ej: 15m * 10 = 150 monedas
+        return Mathf.RoundToInt(currentDepth * 10f);
     }
 
     private int GetCapacityCost()
     {
         int currentCapacity = SavesManager.Instance.currentData.maxCatch;
-        return currentCapacity * 50; // Ej: 3 peces * 50 = 150 monedas
+        return currentCapacity * 50;
     }
 
-    // --- LÓGICA DE COMPRA ---
     private void BuyDepthUpgrade()
     {
+        // <-- COMPROBACIÓN DE LÍMITE ANTES DE COMPRAR
+        float currentDepth = Mathf.Abs(SavesManager.Instance.currentData.maxDepth);
+        if (currentDepth >= absoluteMaxDepth)
+        {
+            Debug.Log("Max depth already reached!");
+            return;
+        }
+
         int cost = GetDepthCost();
 
         if (SavesManager.Instance.currentData.coins >= cost)
         {
-            // 1. Cobramos el dinero (usamos negativo porque nuestro método suma)
             SavesManager.Instance.AddCoins(-cost);
-
-            // 2. Aplicamos la mejora (restamos porque la profundidad es negativa)
             SavesManager.Instance.currentData.maxDepth -= depthUpgradeAmount;
-
-            // 3. Guardamos la partida
             SavesManager.Instance.SaveGame();
 
-            // 4. Avisamos al anzuelo de que sus stats han cambiado
             if (hookController != null) hookController.RefreshStatsFromSave();
 
-            // Nota: No hace falta llamar a UpdateStoreUI() aquí porque al hacer AddCoins(), 
-            // el SavesManager ya lanza el evento OnCoinsChanged, el cual llama a UpdateStoreUI automáticamente.
             Debug.Log("Depth Upgrade Purchased!");
         }
     }
@@ -130,24 +122,34 @@ public class StoreManager : MonoBehaviour
         }
     }
 
-    // --- ACTUALIZACIÓN VISUAL ---
-    /// <summary>
-    /// Updates the text and interactability of the buttons based on the player's wallet.
-    /// Triggered automatically by the SavesManager.OnCoinsChanged event.
-    /// </summary>
     private void UpdateStoreUI(int currentCoins)
     {
         if (SavesManager.Instance == null) return;
 
+        // <-- LÓGICA VISUAL DE LÍMITE MÁXIMO
+        float currentDepth = Mathf.Abs(SavesManager.Instance.currentData.maxDepth);
+        bool isDepthMaxed = currentDepth >= absoluteMaxDepth;
+
         int depthCost = GetDepthCost();
         int capacityCost = GetCapacityCost();
 
-        // Actualizamos los textos mostrando el precio
-        if (depthCostText != null) depthCostText.text = $"Mejorar Profundidad\n{depthCost} <sprite=0>";
-        if (capacityCostText != null) capacityCostText.text = $"Mejorar Capacidad\n{capacityCost} <sprite=0>";
+        // Actualizamos texto de Profundidad
+        if (depthCostText != null)
+        {
+            if (isDepthMaxed)
+                depthCostText.text = "Depth Upgrade\nMAX"; // Muestra MAX si se alcanzó el límite
+            else
+                depthCostText.text = $"Depth Upgrade\n{depthCost} ";
+        }
 
-        // Si no tenemos dinero suficiente, el botón se bloquea visual y mecánicamente (se pone gris)
-        if (depthButton != null) depthButton.interactable = currentCoins >= depthCost;
-        if (capacityButton != null) capacityButton.interactable = currentCoins >= capacityCost;
+        // Actualizamos texto de Capacidad
+        if (capacityCostText != null) capacityCostText.text = $"Catch Upgrade\n{capacityCost} ";
+
+        // Bloqueamos el botón si no hay dinero o si ya está al máximo
+        if (depthButton != null)
+            depthButton.interactable = !isDepthMaxed && (currentCoins >= depthCost);
+
+        if (capacityButton != null)
+            capacityButton.interactable = currentCoins >= capacityCost;
     }
 }
