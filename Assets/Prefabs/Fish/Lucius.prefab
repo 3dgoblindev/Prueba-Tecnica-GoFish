@@ -165,6 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 8a6ed2f068aaef744b46bdb0687a131b, type: 2}
   catchFeel: {fileID: 9144045623337433728}
+  particlesPrefab: {fileID: 8544339856945545103, guid: 0c56472e2f0bb1f4b858efc2042c0a72, type: 3}
   moveDirection: 1
 --- !u!95 &6042561924691412597
 Animator:

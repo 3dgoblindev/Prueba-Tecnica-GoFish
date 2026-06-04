@@ -21,4 +21,7 @@ public class FishData : ScriptableObject
     public float minDepth = -1f;
     [Tooltip("Maximum depth (deepest point, e.g., -15f) where this fish can spawn.")]
     public float maxDepth = -15f;
+
+    [Header("Juice & Feel")]
+    public GameObject catchParticlesPrefab;
 }

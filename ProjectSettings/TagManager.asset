@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Boundary
   - Fish
+  - Sea
   layers:
   - Default
   - TransparentFX

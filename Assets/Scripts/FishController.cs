@@ -103,6 +103,7 @@ public class FishController : MonoBehaviour
         isCaught = true;
 
         catchFeel.Play();
+        Instantiate(data.catchParticlesPrefab, transform.position, Quaternion.identity);
 
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;

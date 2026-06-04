@@ -93,7 +93,7 @@ MonoBehaviour:
   valueText: {fileID: 9090220999103017352}
   flyDuration: 1
   arcHeight: 100
-  targetOffset: {x: 300, y: -50}
+  targetOffset: {x: 0, y: 0}
   finalScale: 0.1
 --- !u!1 &3453401027070621099
 GameObject:
@@ -160,9 +160,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '200
-
-'
+  m_text: +100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
@@ -189,8 +187,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 80
-  m_fontSizeBase: 80
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -138,6 +138,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 30de81cd4d18a264bb15bb4e73b7b2c1, type: 2}
   catchFeel: {fileID: -6720062508112451004}
+  particlesPrefab: {fileID: 8544339856945545103, guid: 0c56472e2f0bb1f4b858efc2042c0a72, type: 3}
   moveDirection: 1
 --- !u!50 &4730662503029716073
 Rigidbody2D:

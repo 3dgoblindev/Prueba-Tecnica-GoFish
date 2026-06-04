@@ -19,3 +19,4 @@ MonoBehaviour:
   baseSwimSpeed: 3
   minDepth: -30
   maxDepth: -80
+  catchParticlesPrefab: {fileID: 6391674144297665439, guid: 0321bf83ea11c0148a673833635fffbb, type: 3}

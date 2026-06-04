@@ -21,7 +21,7 @@ public class CatchRewardPresenter : MonoBehaviour
     [SerializeField] private float delayBetweenFish = 0.15f;
 
     [Header("FX")]
-    [SerializeField] private ParticleSystem catchParticlesPrefab;
+    //[SerializeField] private ParticleSystem catchParticlesPrefab;
     [SerializeField] private CoinFlyEffect coinFlyPrefab;
     [SerializeField] private Canvas rootCanvas;
 
@@ -81,7 +81,7 @@ public class CatchRewardPresenter : MonoBehaviour
         fishT.localScale = bigScale;
         fishT.rotation = Quaternion.identity;
 
-        SpawnParticles(centerPos);
+        
         SpawnCoinFly(fish, centerPos);
 
         yield return new WaitForSeconds(holdDuration);
@@ -100,6 +100,8 @@ public class CatchRewardPresenter : MonoBehaviour
             yield return null;
         }
 
+        SpawnParticles(fish, playerTransform.position);
+
         fishT.gameObject.SetActive(false);
     }
 
@@ -110,11 +112,12 @@ public class CatchRewardPresenter : MonoBehaviour
 
     // ── FX ───────────────────────────────────────────────────────────────────
 
-    private void SpawnParticles(Vector3 worldPos)
+    private void SpawnParticles(FishController fish, Vector3 worldPos)
     {
+        GameObject catchParticlesPrefab = fish.data?.catchParticlesPrefab;
         if (catchParticlesPrefab == null) return;
         var ps = Instantiate(catchParticlesPrefab, worldPos, Quaternion.identity);
-        Destroy(ps.gameObject, ps.main.duration + ps.main.startLifetime.constantMax);
+        
     }
 
     private void SpawnCoinFly(FishController fish, Vector3 worldPos)
