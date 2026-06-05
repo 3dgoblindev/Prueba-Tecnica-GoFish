@@ -1766,6 +1766,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52434372a35734a489b69a18bed96ced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinText: {fileID: 692632028}
 --- !u!4 &710829753 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3225758712822586702, guid: fdc2679420e896e4eb71e0575a422069, type: 3}
@@ -2520,6 +2521,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d20beff6e6c77ef46b42d6e1656e6941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  catchText: {fileID: 1625437289}
 --- !u!1 &1723324116
 GameObject:
   m_ObjectHideFlags: 0
@@ -2957,12 +2959,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storePanel: {fileID: 228722847}
-  absoluteMaxDepth: 500
   depthButton: {fileID: 1944287466}
   depthCostText: {fileID: 257249953}
-  depthUpgradeAmount: 5
   capacityButton: {fileID: 781864201}
   capacityCostText: {fileID: 432491411}
+  absoluteMaxDepth: 500
+  depthUpgradeAmount: 5
   capacityUpgradeAmount: 1
   hookController: {fileID: 1938399127}
 --- !u!4 &1828506025

@@ -1,50 +1,37 @@
 using UnityEngine;
 
-/// <summary>
-/// Controls the autonomous horizontal movement for a specific fish prefab.
-/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class FishController : MonoBehaviour
 {
-    [Header("Configuration")]
-    [Tooltip("This is assigned automatically by the Spawner, or you can set it in the Prefab.")]
     public FishData data;
 
-    [Header("Juice & Feel")]
+    [Header("Juice")]
     [SerializeField] private MiniTweenFeel catchFeel;
 
-    [SerializeField] private float moveDirection = 1f;
-
+    private float moveDirection = 1f;
     private float currentSwimSpeed;
     private Rigidbody2D rb;
+    private Collider2D myCollider;
     private bool isCaught = false;
     private float turnCooldownTimer = 0f;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        myCollider = GetComponent<Collider2D>();
     }
 
-    /// <summary>
-    /// Resets the physical state of the fish when it gets pulled from the Object Pool.
-    /// </summary>
     public void ResetForSpawn(float startX, float startY, Transform spawnerTransform)
     {
         isCaught = false;
 
-        // Restore physical properties in case it was previously caught
-        GetComponent<Collider2D>().enabled = true;
-        rb.isKinematic = false;
+        if (myCollider != null) myCollider.enabled = true;
+        if (rb != null) rb.isKinematic = false;
 
         transform.SetParent(spawnerTransform);
-
-        // Reset position aplicando la X y la Y nuevas
         transform.position = new Vector3(startX, startY, transform.position.z);
     }
 
-    /// <summary>
-    /// Configures the fish's initial movement parameters.
-    /// </summary>
     public void InitializeMovement(float direction, float speed)
     {
         moveDirection = Mathf.Sign(direction);
@@ -56,16 +43,11 @@ public class FishController : MonoBehaviour
     {
         if (isCaught) return;
 
-        if (turnCooldownTimer > 0)
+        if (turnCooldownTimer > 0f)
         {
             turnCooldownTimer -= Time.fixedDeltaTime;
         }
 
-        HandleSwimming();
-    }
-
-    private void HandleSwimming()
-    {
         rb.velocity = new Vector2(currentSwimSpeed * moveDirection, rb.velocity.y);
     }
 
@@ -75,46 +57,46 @@ public class FishController : MonoBehaviour
 
         if (collision.CompareTag("Boundary"))
         {
-            TurnAround();
+            moveDirection *= -1f;
+            UpdateFacingDirection();
+            turnCooldownTimer = 0.5f; // Prevent rapid back-to-back turning
         }
-    }
-
-    private void TurnAround()
-    {
-        moveDirection *= -1f;
-        UpdateFacingDirection();
-        turnCooldownTimer = 0.5f;
     }
 
     private void UpdateFacingDirection()
     {
-        if (moveDirection > 0)
-        {
-            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        }
-        else
-        {
-            transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-        }
+        // Flip sprite via Y rotation based on move direction
+        transform.rotation = Quaternion.Euler(0f, moveDirection > 0f ? 0f : 180f, 0f);
     }
 
     public void GetCaught(Transform hookTransform)
     {
         isCaught = true;
 
-        catchFeel.Play();
-        Instantiate(data.catchParticlesPrefab, transform.position, Quaternion.identity);
+        if (catchFeel != null) catchFeel.Play();
+        if (data != null && data.catchParticlesPrefab != null)
+        {
+            Instantiate(data.catchParticlesPrefab, transform.position, Quaternion.identity);
+        }
 
-        AudioManager.Instance.PlaySFX(data.catchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
+        if (data != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(data.catchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
+        }
 
-        rb.velocity = Vector2.zero;
-        rb.isKinematic = true;
-        GetComponent<Collider2D>().enabled = false;
+        // Disable physics and attach to the hook
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.isKinematic = true;
+        }
+        if (myCollider != null) myCollider.enabled = false;
 
         transform.SetParent(hookTransform);
         transform.localPosition = Vector3.zero;
 
+        // Angle the fish slightly downward while hanging on the hook
         float angleOffset = Random.Range(-30f, 30f);
-        transform.localRotation = Quaternion.Euler(0, 0, 90f + angleOffset);
+        transform.localRotation = Quaternion.Euler(0f, 0f, 90f + angleOffset);
     }
 }
