@@ -38,6 +38,10 @@ public class FishSpawner : MonoBehaviour
         HookController.OnReturnToSurface -= HandleReturnToSurface;
     }
 
+    private void Start()
+    {
+        currentMaxCastDepth = SavesManager.Instance.currentData.maxDepth;
+    }
     private void HandleCastCompleted()
     {
         // Calculate the dynamic amount of fishes based on depth to avoid overcrowding

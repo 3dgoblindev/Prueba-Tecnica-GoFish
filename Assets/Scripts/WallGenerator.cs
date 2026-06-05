@@ -41,6 +41,11 @@ public class WallGenerator : MonoBehaviour
         HookController.OnReturnToSurface -= HandleReturnToSurface;
     }
 
+    private void Start()
+    {
+        maxDepth = SavesManager.Instance.currentData.maxDepth;
+    }
+
     private void HandleCastCompleted()
     {
         float depth = minDepth;

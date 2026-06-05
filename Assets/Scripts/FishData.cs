@@ -24,4 +24,5 @@ public class FishData : ScriptableObject
 
     [Header("Juice & Feel")]
     public GameObject catchParticlesPrefab;
+    public AudioClip catchSound;
 }

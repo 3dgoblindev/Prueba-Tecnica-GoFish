@@ -51,6 +51,9 @@ public class HookController : MonoBehaviour
     [Tooltip("Velocidad del lerp de rotación. Más alto = más reactivo.")]
     [SerializeField] private float tiltSpeed = 8f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip waterSound;
+
     // --------------------------------------------------------
     // PRIVATE FIELDS
     // --------------------------------------------------------

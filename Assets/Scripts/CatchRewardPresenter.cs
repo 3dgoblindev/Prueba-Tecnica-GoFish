@@ -20,10 +20,19 @@ public class CatchRewardPresenter : MonoBehaviour
     [Header("Stagger")]
     [SerializeField] private float delayBetweenFish = 0.15f;
 
+    [Header("Stagger Speed Scaling")]
+    [SerializeField] private float minFishDuration = 0.15f;
+    [SerializeField] private float speedIncreasePerFish = 0.15f;
+
     [Header("FX")]
-    //[SerializeField] private ParticleSystem catchParticlesPrefab;
     [SerializeField] private CoinFlyEffect coinFlyPrefab;
     [SerializeField] private Canvas rootCanvas;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip presentSound;
+    [SerializeField] private float presentPitchBase = 0.9f;
+    [SerializeField] private float presentPitchStep = 0.08f; // cuánto sube cada pez
+    [SerializeField] private float presentPitchMax = 1.8f;
 
     private HookController hookController;
 
@@ -36,23 +45,28 @@ public class CatchRewardPresenter : MonoBehaviour
 
     private IEnumerator PresentAllFish(List<FishController> fishes)
     {
-        float singleFishTime = flyToCenterDuration + holdDuration + flyToPlayerDuration;
-
         for (int i = 0; i < fishes.Count; i++)
         {
             if (fishes[i] != null)
-                StartCoroutine(PresentOneFish(fishes[i]));
+            {
+                float speedMultiplier = 1f / (1f + i * speedIncreasePerFish);
+                float pitch = Mathf.Min(presentPitchBase + i * presentPitchStep, presentPitchMax);
+                yield return StartCoroutine(PresentOneFish(fishes[i], speedMultiplier, pitch));
+            }
 
             if (i < fishes.Count - 1)
-                yield return new WaitForSeconds(delayBetweenFish);
+                yield return new WaitForSeconds(delayBetweenFish * (1f / (1f + i * speedIncreasePerFish)));
         }
 
-        yield return new WaitForSeconds(singleFishTime);
         hookController?.FinalizeCast();
     }
 
-    private IEnumerator PresentOneFish(FishController fish)
+    private IEnumerator PresentOneFish(FishController fish, float speedMultiplier = 1f, float pitch = 1f)
     {
+        float actualFlyToCenter = Mathf.Max(minFishDuration, flyToCenterDuration * speedMultiplier);
+        float actualHold = Mathf.Max(minFishDuration * 0.5f, holdDuration * speedMultiplier);
+        float actualFlyToPlayer = Mathf.Max(minFishDuration, flyToPlayerDuration * speedMultiplier);
+
         Transform fishT = fish.transform;
         fishT.SetParent(null);
 
@@ -65,10 +79,10 @@ public class CatchRewardPresenter : MonoBehaviour
 
         // ── Fase 1: desde caña (pequeño, rotado) → centro (grande, recto) ─────
         float elapsed = 0f;
-        while (elapsed < flyToCenterDuration)
+        while (elapsed < actualFlyToCenter)
         {
             elapsed += Time.deltaTime;
-            float e = EaseOutCubic(Mathf.Clamp01(elapsed / flyToCenterDuration));
+            float e = EaseOutCubic(Mathf.Clamp01(elapsed / actualFlyToCenter));
 
             fishT.position = Vector3.Lerp(fromPos, centerPos, e);
             fishT.localScale = Vector3.Lerp(fromScale, bigScale, e);
@@ -81,18 +95,20 @@ public class CatchRewardPresenter : MonoBehaviour
         fishT.localScale = bigScale;
         fishT.rotation = Quaternion.identity;
 
-        
+        AudioManager.Instance.PlaySFX(presentSound, volume: 1f, pitch: pitch);
+
+
         SpawnCoinFly(fish, centerPos);
 
-        yield return new WaitForSeconds(holdDuration);
+        yield return new WaitForSeconds(actualHold);
 
         // ── Fase 2: desde centro (grande, recto) → jugador (cero, desaparece) ──
         Vector3 playerPos = playerTransform.position;
         elapsed = 0f;
-        while (elapsed < flyToPlayerDuration)
+        while (elapsed < actualFlyToPlayer)
         {
             elapsed += Time.deltaTime;
-            float e = EaseInQuad(Mathf.Clamp01(elapsed / flyToPlayerDuration));
+            float e = EaseInQuad(Mathf.Clamp01(elapsed / actualFlyToPlayer));
 
             fishT.position = Vector3.Lerp(centerPos, playerPos, e);
             fishT.localScale = Vector3.Lerp(bigScale, Vector3.zero, e);
@@ -101,6 +117,7 @@ public class CatchRewardPresenter : MonoBehaviour
         }
 
         SpawnParticles(fish, playerTransform.position);
+        AudioManager.Instance.PlaySFX(fish.data.catchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
 
         fishT.gameObject.SetActive(false);
     }
@@ -116,15 +133,13 @@ public class CatchRewardPresenter : MonoBehaviour
     {
         GameObject catchParticlesPrefab = fish.data?.catchParticlesPrefab;
         if (catchParticlesPrefab == null) return;
-        var ps = Instantiate(catchParticlesPrefab, worldPos, Quaternion.identity);
-        
+        Instantiate(catchParticlesPrefab, worldPos, Quaternion.identity);
     }
 
     private void SpawnCoinFly(FishController fish, Vector3 worldPos)
     {
         if (coinFlyPrefab == null || coinUITarget == null || fish.data == null) return;
 
-        // Instanciar como hijo del Canvas, no en world space
         var coin = Instantiate(coinFlyPrefab, rootCanvas.transform);
         coin.Init(rootCanvas);
         coin.Fly(worldPos, coinUITarget, fish.data.price);

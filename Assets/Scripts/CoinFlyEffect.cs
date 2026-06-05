@@ -15,6 +15,9 @@ public class CoinFlyEffect : MonoBehaviour
     [Tooltip("Escala final al llegar al destino (ej. 0.5 = la mitad de pequeña)")]
     [SerializeField] private float finalScale = 0.5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip flySFX;
+
     private Canvas rootCanvas;
 
     public void Init(Canvas canvas) => rootCanvas = canvas;
@@ -78,7 +81,7 @@ public class CoinFlyEffect : MonoBehaviour
 
             yield return null;
         }
-
+        AudioManager.Instance.PlaySFX(flySFX, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
         Destroy(gameObject);
     }
 }

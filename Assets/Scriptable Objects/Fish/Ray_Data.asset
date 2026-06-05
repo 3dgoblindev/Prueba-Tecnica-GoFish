@@ -20,3 +20,4 @@ MonoBehaviour:
   minDepth: -5
   maxDepth: -20
   catchParticlesPrefab: {fileID: 1644110196719745061, guid: cadea52bbe7e59e478a67616c7b8db48, type: 3}
+  catchSound: {fileID: 8300000, guid: 06c37ac2c5f18064490d76b32d96f71f, type: 3}

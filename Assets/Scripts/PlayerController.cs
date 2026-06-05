@@ -25,6 +25,12 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Segundos que se congela en el peak del lanzamiento.")]
     [SerializeField] private float freezeDuration = 0.10f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip startCastSound;
+    [SerializeField] private AudioClip castSound;
+    [SerializeField] private AudioClip castHightlightSound;
+    [SerializeField] private AudioClip recoilSound;
+
     // ── State ────────────────────────────────────────────────────────────────
     private bool isFishing = false;
     private bool isCharging = false;
@@ -79,6 +85,7 @@ public class PlayerController : MonoBehaviour
     {
         isCharging = true;
         Debug.Log("[PC] ✓ isCharging = true");
+        AudioManager.Instance.PlaySFX(startCastSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
     }
 
     private void TickZoom()
@@ -96,6 +103,8 @@ public class PlayerController : MonoBehaviour
         isCharging = false;
         isFishing = true;
         Debug.Log("[PC] CommitCast → lanzando animación");
+
+        AudioManager.Instance.PlaySFX(castSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
 
         // Zoom out inmediato al soltar (snap feel)
         StartCoroutine(ZoomOut());
@@ -149,6 +158,9 @@ public class PlayerController : MonoBehaviour
     public void OnFishingSequenceEnded()
     {
         Debug.Log("[PC] OnFishingSequenceEnded → isFishing = false");
+
+        AudioManager.Instance.PlaySFX(castHightlightSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
+
         castFeel?.Play();
         isFishing = false;
     }
@@ -160,6 +172,8 @@ public class PlayerController : MonoBehaviour
         if (animator == null) return;
         animator.ResetTrigger(ThrowHash);
         animator.SetTrigger(RecoilHash);
+
+        AudioManager.Instance.PlaySFX(recoilSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
     }
 
     // ── UI Guard ─────────────────────────────────────────────────────────────

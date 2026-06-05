@@ -105,6 +105,8 @@ public class FishController : MonoBehaviour
         catchFeel.Play();
         Instantiate(data.catchParticlesPrefab, transform.position, Quaternion.identity);
 
+        AudioManager.Instance.PlaySFX(data.catchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
+
         rb.velocity = Vector2.zero;
         rb.isKinematic = true;
         GetComponent<Collider2D>().enabled = false;

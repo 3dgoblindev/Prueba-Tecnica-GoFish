@@ -95,6 +95,7 @@ MonoBehaviour:
   arcHeight: 100
   targetOffset: {x: 0, y: 0}
   finalScale: 0.1
+  flySFX: {fileID: 8300000, guid: b28c70b210222d046bc4f1937c83ba1e, type: 3}
 --- !u!1 &3453401027070621099
 GameObject:
   m_ObjectHideFlags: 0
