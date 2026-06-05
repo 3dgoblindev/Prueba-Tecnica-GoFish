@@ -463,7 +463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798ae1b8370dc72468d20d5740d4f7ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myMusicClip: {fileID: 8300000, guid: 03b13c14443bdf348a9c3c91aa7b6382, type: 3}
+  backgroundMusicClip: {fileID: 0}
 --- !u!4 &260588931
 Transform:
   m_ObjectHideFlags: 0
@@ -1250,8 +1250,8 @@ MonoBehaviour:
   stoneSpacing: 0.7
   randomRotationZ: 1
   randomScale: 0
-  randomY: 0.5
   randomX: 0.4
+  randomY: 0.5
   scaleRange: {x: 0.8, y: 1.2}
 --- !u!1 &519420028
 GameObject:
@@ -1410,7 +1410,7 @@ MonoBehaviour:
   hookOffsetY: 3
   smoothTime: 0.2
   maxY: 5
-  minY: -50
+  minY: -100
 --- !u!1001 &530536920
 PrefabInstance:
   m_ObjectHideFlags: 0

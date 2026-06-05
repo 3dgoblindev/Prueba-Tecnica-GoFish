@@ -1,21 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Simple scene-level initializer that requests the global AudioManager to play a specified background music track on start.
+/// </summary>
 public class MusicManager : MonoBehaviour
 {
-    // This script is just an example of how to use the AudioManager to play music.
-    // The ideal would be to have this be done through a UI that allows you to change the music in the game
-    [SerializeField] private AudioClip myMusicClip;
-    // Start is called before the first frame update
-    void Start()
+    [Header("Audio Configuration")]
+    [Tooltip("The background music clip to be played automatically when this scene initializes.")]
+    [SerializeField] private AudioClip backgroundMusicClip;
+
+    private void Start()
     {
-        AudioManager.Instance.PlayMusic(myMusicClip);
+        InitializeBackgroundMusic();
     }
 
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// Safely registers the assigned background music track with the persistent AudioManager instance.
+    /// </summary>
+    private void InitializeBackgroundMusic()
     {
-        
+        if (backgroundMusicClip == null) return;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusic(backgroundMusicClip);
+        }
+        else
+        {
+            Debug.LogWarning($"[{nameof(MusicManager)}] Failed to play background music because AudioManager.Instance is missing from the scene layer.", this);
+        }
     }
 }

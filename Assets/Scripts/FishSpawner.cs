@@ -2,27 +2,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Manages the dynamic pooling and spawning of different fish prefabs based on depth zones.
-/// Uses a density-based algorithm to prevent overcrowding in shallow waters.
+/// Manages runtime generation, localized zone distribution filtering, and dictionary-keyed object pooling 
+/// for swimming fish entities based on contextual progression depths.
 /// </summary>
 public class FishSpawner : MonoBehaviour
 {
-    [Header("Dependencies")]
-    [Tooltip("Array of all available fish types in the game.")]
+    [Header("Asset Dependencies")]
+    [Tooltip("The comprehensive roster array containing all fish definitions available in the system.")]
     [SerializeField] private FishData[] allAvailableFishes;
 
-    [Header("Spawn Configuration")]
-    [Tooltip("The maximum depth the player can currently reach. Should be synced with player stats.")]
+    [Header("Spatial Boundaries")]
+    [Tooltip("The top vertical boundary coordinate threshold where target entities can spawn.")]
     [SerializeField] private float minCastDepth = -1f;
+
+    [Tooltip("The dynamic baseline vertical floor depth limit calculated on system initialization.")]
     [SerializeField] private float currentMaxCastDepth = -15f;
 
-    [Tooltip("How many fishes to spawn per 1 unit of depth. Controls the visual density.")]
+    [Header("Algorithmic Tuners")]
+    [Tooltip("The scalar factor multiplied against the total absolute depth to determine maximum entity counts per cast.")]
     [SerializeField] private float fishDensity = 1.5f;
 
-    [Tooltip("Horizontal bounds for spawning fishes (X min, X max).")]
+    [Tooltip("Horizontal local coordinate constraints limits for layout distribution (X = Min, Y = Max).")]
     [SerializeField] private Vector2 horizontalSpawnBounds = new Vector2(-2.5f, 2.5f);
 
-    // Dynamic Object Pool Dictionary: Groups pools by their FishData type
+    // Context-Keyed Object Pooling Infrastructure
     private Dictionary<FishData, Queue<FishController>> fishPools = new Dictionary<FishData, Queue<FishController>>();
     private List<FishController> activeFishes = new List<FishController>();
 
@@ -40,29 +43,46 @@ public class FishSpawner : MonoBehaviour
 
     private void Start()
     {
-        currentMaxCastDepth = SavesManager.Instance.currentData.maxDepth;
+        InitializeMaxCastDepth();
     }
+
+    /// <summary>
+    /// Synchronizes spatial spawning ceilings with persistent save profiles.
+    /// </summary>
+    private void InitializeMaxCastDepth()
+    {
+        if (SavesManager.Instance?.currentData != null)
+        {
+            currentMaxCastDepth = SavesManager.Instance.currentData.maxDepth;
+        }
+    }
+
+    /// <summary>
+    /// Event handler triggered on player line cast completion. Evaluates density metrics and populates the vertical volume.
+    /// </summary>
     private void HandleCastCompleted()
     {
-        // Calculate the dynamic amount of fishes based on depth to avoid overcrowding
-        // Mathf.Abs ensures the depth is positive for calculation, Mathf.Max ensures at least 1 fish spawns.
         int calculatedFishAmount = Mathf.Max(1, Mathf.RoundToInt(Mathf.Abs(currentMaxCastDepth) * fishDensity));
+        InitializeMaxCastDepth();
 
         for (int i = 0; i < calculatedFishAmount; i++)
         {
-            float randomDepth = Random.Range(0f, currentMaxCastDepth);
-
+            float randomDepth = Random.Range(minCastDepth, currentMaxCastDepth);
             FishData selectedData = GetRandomFishDataForDepth(randomDepth);
-            if (selectedData == null || selectedData.fishPrefab == null) continue;
 
-            // Pass the specific data to get the correct prefab from the correct pool
+            if (selectedData == null || selectedData.fishPrefab == null)
+            {
+                continue;
+            }
+
             FishController fish = GetFishFromPool(selectedData);
 
+            // Compute spatial layouts and directional states
             float randomX = Random.Range(horizontalSpawnBounds.x, horizontalSpawnBounds.y);
             float randomDirection = Random.value > 0.5f ? 1f : -1f;
 
-            // Reset and activate the fish
-            fish.ResetForSpawn(randomX, randomDepth, this.transform);
+            // Actor Initialization
+            fish.ResetForSpawn(randomX, randomDepth, transform);
             fish.InitializeMovement(randomDirection, selectedData.baseSwimSpeed);
             fish.gameObject.SetActive(true);
 
@@ -70,15 +90,19 @@ public class FishSpawner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Event handler triggered when the line returns to origin. Disables runtime instances and recycles them to their respective queues.
+    /// </summary>
     private void HandleReturnToSurface()
     {
         foreach (FishController fish in activeFishes)
         {
-            if (fish != null)
-            {
-                fish.gameObject.SetActive(false);
+            if (fish == null) continue;
 
-                // Return the fish to its specific pool based on its data
+            fish.gameObject.SetActive(false);
+
+            if (fish.data != null && fishPools.ContainsKey(fish.data))
+            {
                 fishPools[fish.data].Enqueue(fish);
             }
         }
@@ -87,39 +111,43 @@ public class FishSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// Retrieves a specific fish prefab from its designated pool, or instantiates one if empty.
+    /// Looks up an existing object type pool container or constructs one before spinning up a recycled tracking context.
     /// </summary>
+    /// <param name="data">The matching scriptable object asset template acting as the unique structural pool sorting ID.</param>
+    /// <returns>A clean, inactive FishController instance linked back to its origin definitions.</returns>
     private FishController GetFishFromPool(FishData data)
     {
-        // If this fish type doesn't have a pool yet, create one
         if (!fishPools.ContainsKey(data))
         {
             fishPools[data] = new Queue<FishController>();
         }
 
-        // Try to get a pooled object
         if (fishPools[data].Count > 0)
         {
             return fishPools[data].Dequeue();
         }
 
-        // Pool is empty, instantiate the specific prefab assigned in the FishData
-        FishController newFish = Instantiate(data.fishPrefab, this.transform);
-
-        // Ensure the instantiated fish knows its own data for when it returns to the pool
+        FishController newFish = Instantiate(data.fishPrefab, transform);
         newFish.data = data;
-
         newFish.gameObject.SetActive(false);
+
         return newFish;
     }
 
+    /// <summary>
+    /// Iterates through the full dataset matrix to filter down a pool of valid choices matching the target space parameters.
+    /// </summary>
+    /// <param name="depth">The precise vertical evaluation layer coordinate passed by the generation step loop.</param>
+    /// <returns>A randomly selected valid scriptable data block profile or null if depth layers evaluate empty.</returns>
     private FishData GetRandomFishDataForDepth(float depth)
     {
+        if (allAvailableFishes == null || allAvailableFishes.Length == 0) return null;
+
         List<FishData> validFishes = new List<FishData>();
 
         foreach (FishData fish in allAvailableFishes)
         {
-            if (depth <= fish.minDepth && depth >= fish.maxDepth)
+            if (fish != null && depth <= fish.minDepth && depth >= fish.maxDepth)
             {
                 validFishes.Add(fish);
             }

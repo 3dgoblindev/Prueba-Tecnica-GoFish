@@ -1,36 +1,50 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Compact script to add "Game Feel" (Juice) to any object using native Tweens.
+/// A lightweight runtime component used to apply procedural procedural animations (Juice) 
+/// to transform spaces using custom mathematical interpolation algorithms.
 /// </summary>
 public class MiniTweenFeel : MonoBehaviour
 {
-    public enum TweenMode { OneWay, PingPong }
-    public enum EaseType { Linear, EaseIn, EaseOut, EaseInOut, PunchElastic }
+    public enum TweenMode
+    {
+        OneWay,
+        PingPong
+    }
 
-    [Header("--- Tween Settings ---")]
+    public enum EaseType
+    {
+        Linear,
+        EaseIn,
+        EaseOut,
+        EaseInOut,
+        PunchElastic
+    }
+
+    [Header("Tween Configurations")]
     [SerializeField] private TweenMode tweenMode = TweenMode.PingPong;
     [SerializeField] private EaseType easeType = EaseType.EaseOut;
     [SerializeField] private float duration = 0.3f;
     [SerializeField] private bool playOnEnable = false;
 
-    [Header("--- Target: Position ---")]
+    [Header("Position Modulation")]
     [SerializeField] private bool animatePosition = false;
-    [Tooltip("Relative displacement from its current position.")]
-    [SerializeField] private Vector3 positionOffset = new Vector3(0, 1f, 0);
+    [Tooltip("Relative local translation offset vector calculation targeted at completion layout.")]
+    [SerializeField] private Vector3 positionOffset = new Vector3(0f, 1f, 0f);
 
-    [Header("--- Target: Rotation ---")]
+    [Header("Rotation Modulation")]
     [SerializeField] private bool animateRotation = false;
-    [Tooltip("Angles to rotate (in degrees) from its current rotation.")]
-    [SerializeField] private Vector3 rotationOffset = new Vector3(0, 0, 45f);
+    [Tooltip("Relative local euler structural angular displacement calculated on evaluation loops.")]
+    [SerializeField] private Vector3 rotationOffset = new Vector3(0f, 0f, 45f);
 
-    [Header("--- Target: Scale ---")]
+    [Header("Scale Modulation")]
     [SerializeField] private bool animateScale = false;
-    [Tooltip("Target scale the object will reach.")]
+    [Tooltip("Absolute vector parameters applied to local transform scales.")]
     [SerializeField] private Vector3 targetScale = new Vector3(1.3f, 1.3f, 1.3f);
 
-    // Variables to cache the exact initial states before each animation
+    // Initial Transformation Snapshots
     private Vector3 startPosition;
     private Vector3 startRotation;
     private Vector3 startScale;
@@ -45,9 +59,9 @@ public class MiniTweenFeel : MonoBehaviour
     }
 
     /// <summary>
-    /// Executes the visual effect. You can call it from other scripts (e.g., when clicking a button, taking damage, etc.)
+    /// Evaluates operational states, overrides running calculations, and executes a fresh interpolation routine cycle.
     /// </summary>
-    [ContextMenu("Test Tween")] // <--- This allows testing it from the editor by right-clicking the component
+    [ContextMenu("Test Tween")]
     public void Play()
     {
         if (tweenCoroutine != null)
@@ -58,12 +72,12 @@ public class MiniTweenFeel : MonoBehaviour
         tweenCoroutine = StartCoroutine(DoTweenRoutine());
     }
 
+    /// <summary>
+    /// Core operational processing loop tracking real-time frames to mutate transformation components.
+    /// </summary>
     private IEnumerator DoTweenRoutine()
     {
-        // Save the initial state RIGHT before starting to avoid misconfigurations if the object moves due to gameplay
-        startPosition = transform.localPosition;
-        startRotation = transform.localEulerAngles;
-        startScale = transform.localScale;
+        CaptureInitialStates();
 
         float elapsed = 0f;
 
@@ -72,64 +86,91 @@ public class MiniTweenFeel : MonoBehaviour
             elapsed += Time.deltaTime;
             float linearPercentage = Mathf.Clamp01(elapsed / duration);
 
-            // 1. Modify time based on the mode (OneWay or PingPong)
-            float t = linearPercentage;
+            float timeFactor = EvaluateTweenProgressMode(linearPercentage);
+            float evaluatedFactor = EvaluateEase(timeFactor, easeType);
 
-            // If it's PingPong and NOT PunchElastic (since punch returns to 0 due to its own math)
-            if (tweenMode == TweenMode.PingPong && easeType != EaseType.PunchElastic)
-            {
-                // Converts the 0->1 progress into a round trip: 0 -> 1 -> 0
-                t = linearPercentage < 0.5f ? linearPercentage * 2f : (1f - linearPercentage) * 2f;
-            }
-
-            // 2. Apply the mathematical smoothing curve (Ease)
-            float evaluatedFactor = EvaluateEase(t, easeType);
-
-            // 3. Apply transformations using LerpUnclamped to allow elastic overshoots
-            if (animatePosition)
-            {
-                transform.localPosition = Vector3.LerpUnclamped(startPosition, startPosition + positionOffset, evaluatedFactor);
-            }
-
-            if (animateRotation)
-            {
-                // We use Vector Lerp on Euler angles for quick, direct-feel rotations
-                transform.localEulerAngles = Vector3.LerpUnclamped(startRotation, startRotation + rotationOffset, evaluatedFactor);
-            }
-
-            if (animateScale)
-            {
-                transform.localScale = Vector3.LerpUnclamped(startScale, targetScale, evaluatedFactor);
-            }
+            ApplyTransformations(evaluatedFactor);
 
             yield return null;
         }
 
-        // Ensure everything is perfectly in place at the end of the coroutine if it's OneWay or returned to origin
         RestoreFinalState();
     }
 
+    /// <summary>
+    /// Explicitly captures transformation fields before entering dynamic interpolation sequences.
+    /// </summary>
+    private void CaptureInitialStates()
+    {
+        startPosition = transform.localPosition;
+        startRotation = transform.localEulerAngles;
+        startScale = transform.localScale;
+    }
+
+    /// <summary>
+    /// Translates raw linear timeline progress percentages into contextual trajectory playback sequences.
+    /// </summary>
+    private float EvaluateTweenProgressMode(float linearPercentage)
+    {
+        if (tweenMode == TweenMode.PingPong && easeType != EaseType.PunchElastic)
+        {
+            return linearPercentage < 0.5f ? linearPercentage * 2f : (1f - linearPercentage) * 2f;
+        }
+
+        return linearPercentage;
+    }
+
+    /// <summary>
+    /// Maps normalized time signatures onto explicit curves using closed-form kinematic formulas.
+    /// </summary>
     private float EvaluateEase(float t, EaseType type)
     {
         switch (type)
         {
             case EaseType.Linear:
                 return t;
+
             case EaseType.EaseIn:
                 return t * t;
+
             case EaseType.EaseOut:
                 return t * (2f - t);
+
             case EaseType.EaseInOut:
                 return t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
+
             case EaseType.PunchElastic:
-                // Mathematical equation simulating an elastic impact: vibrates, damps, and ends at 0.
-                // Recommended to use in "OneWay" mode because the curve itself returns to the origin.
                 return Mathf.Sin(t * Mathf.PI * 3f) * (1f - t);
+
             default:
                 return t;
         }
     }
 
+    /// <summary>
+    /// Steps values along the evaluation space using unclamped lerp calculations to preserve kinetic overshoots.
+    /// </summary>
+    private void ApplyTransformations(float factor)
+    {
+        if (animatePosition)
+        {
+            transform.localPosition = Vector3.LerpUnclamped(startPosition, startPosition + positionOffset, factor);
+        }
+
+        if (animateRotation)
+        {
+            transform.localEulerAngles = Vector3.LerpUnclamped(startRotation, startRotation + rotationOffset, factor);
+        }
+
+        if (animateScale)
+        {
+            transform.localScale = Vector3.LerpUnclamped(startScale, targetScale, factor);
+        }
+    }
+
+    /// <summary>
+    /// Enforces rigorous anchoring to alignment thresholds upon loop completion sequences.
+    /// </summary>
     private void RestoreFinalState()
     {
         if (tweenMode == TweenMode.PingPong || easeType == EaseType.PunchElastic)
@@ -138,7 +179,7 @@ public class MiniTweenFeel : MonoBehaviour
             if (animateRotation) transform.localEulerAngles = startRotation;
             if (animateScale) transform.localScale = startScale;
         }
-        else // OneWay
+        else
         {
             if (animatePosition) transform.localPosition = startPosition + positionOffset;
             if (animateRotation) transform.localEulerAngles = startRotation + rotationOffset;

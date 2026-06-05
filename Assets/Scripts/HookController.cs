@@ -3,16 +3,12 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Controls the movement and state machine of the fishing hook using physics.
-/// Handles catching multiple fish on the way up and returning them to the surface.
-/// Integrates with SavesManager for economy and upgrades.
+/// Manages the core physics-driven state machine and spatial movement vectors of the fishing hook.
+/// Handles spatial boundaries, dynamic multi-catch fish registration routines, and currency rewards serialization.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class HookController : MonoBehaviour
 {
-    // --------------------------------------------------------
-    // ENUMS
-    // --------------------------------------------------------
     public enum HookState
     {
         Idle,
@@ -20,79 +16,61 @@ public class HookController : MonoBehaviour
         Ascending
     }
 
-    // --------------------------------------------------------
-    // SERIALIZED FIELDS
-    // --------------------------------------------------------
-    [Header("Vertical Movement")]
-    [Tooltip("Speed at which the hook descends into the water.")]
-    [SerializeField] private float descentSpeed = 3f;
-
-    [Tooltip("Standard ascent speed (can be used for specific mechanics).")]
-    [SerializeField] private float ascentSpeed = 5f;
-
-    [Tooltip("High-speed ascent velocity used when the hook reaches maximum depth.")]
-    [SerializeField] private float rapidAscentSpeed = 15f; // <-- NUEVA VARIABLE DECLARADA
-
-    [Tooltip("Maximum depth the hook can reach before automatically returning.")]
-    [SerializeField] private float maxDepth = -15f;
-
-    [Header("Horizontal Movement")]
-    [Tooltip("Multiplier for how fast the hook accelerates towards the finger's X position.")]
-    [SerializeField] private float horizontalResponsiveness = 10f;
-
-    [Header("Hook Stats")]
-    [Tooltip("Maximum number of fish the hook can catch in a single cast.")]
-    [SerializeField] private int maxFishCapacity = 3;
-
-    [Header("Hook Rotation")]
-    [Tooltip("Ángulo máximo de inclinación lateral (grados).")]
-    [SerializeField] private float maxTiltAngle = 25f;
-
-    [Tooltip("Velocidad del lerp de rotación. Más alto = más reactivo.")]
-    [SerializeField] private float tiltSpeed = 8f;
-
-    [Header("Audio")]
-    [SerializeField] private AudioClip waterSound;
-
-    // --------------------------------------------------------
-    // PRIVATE FIELDS
-    // --------------------------------------------------------
-    private HookState currentState = HookState.Idle;
-    private float startY;
-    private Camera mainCamera;
-    private Rigidbody2D rb;
-    private List<FishController> caughtFishes = new List<FishController>();
-
-    // --------------------------------------------------------
-    // EVENTS
-    // --------------------------------------------------------
     public static event Action OnReturnToSurface;
     public static event Action<float> OnDepthChanged;
     public static event Action<List<FishController>> OnCatchReady;
 
-
     /// <summary>
-    /// Triggered when a fish is caught. 
-    /// Int 1: Current caught count. Int 2: Max capacity.
+    /// Broadcasts capacity variation data hooks. Parameter 1: Current payload volume. Parameter 2: Maximum asset limit.
     /// </summary>
     public static event Action<int, int> OnCatchCountChanged;
 
-    // --------------------------------------------------------
-    // UNITY LIFECYCLE
-    // --------------------------------------------------------
+    [Header("Vertical Movement Physics")]
+    [Tooltip("Downward vertical step speed applied when passing through the Descending state.")]
+    [SerializeField] private float descentSpeed = 3f;
+
+    [Tooltip("Standard upward vertical speed profile applied during active collection runs.")]
+    [SerializeField] private float ascentSpeed = 5f;
+
+    [Tooltip("High-velocity upward ascent multiplier applied once inventory volume tolerances are fully saturated.")]
+    [SerializeField] private float rapidAscentSpeed = 15f;
+
+    [Tooltip("The safety depth floor limit where the physics trajectory changes to ascending tracking vectors.")]
+    [SerializeField] private float maxDepth = -15f;
+
+    [Header("Horizontal Workspace Input")]
+    [Tooltip("Linear tracking multiplier calculation matching active screen cursor world positions.")]
+    [SerializeField] private float horizontalResponsiveness = 10f;
+
+    [Header("Inventory Capacity Thresholds")]
+    [Tooltip("The absolute limit cap tracking concurrent loaded item entities inside the collection collection.")]
+    [SerializeField] private int maxFishCapacity = 3;
+
+    [Header("Spatial Rotation (Juice)")]
+    [Tooltip("Maximum allowed structural pivot angular bounds applied during lateral steering operations.")]
+    [SerializeField] private float maxTiltAngle = 25f;
+
+    [Tooltip("Interpolation speed tracking angular alignment vectors. Higher metrics increase immediate response snaps.")]
+    [SerializeField] private float tiltSpeed = 8f;
+
+    // Rigid Architecture Components
+    private HookState currentState = HookState.Idle;
+    private float startYPosition;
+    private Camera mainCamera;
+    private Rigidbody2D rb2d;
+    private List<FishController> caughtFishes = new List<FishController>();
+
     private void Awake()
     {
-        // Cache references to avoid costly calls during Update/FixedUpdate
         mainCamera = Camera.main;
-        rb = GetComponent<Rigidbody2D>();
-        startY = transform.position.y;
+        rb2d = GetComponent<Rigidbody2D>();
+        startYPosition = transform.position.y;
     }
 
     private void Start()
     {
         LoadStatsFromSave();
 
-        // Force initial UI update on startup
         OnDepthChanged?.Invoke(0f);
         OnCatchCountChanged?.Invoke(0, maxFishCapacity);
     }
@@ -106,6 +84,7 @@ public class HookController : MonoBehaviour
     {
         PlayerController.OnCastCompleted -= StartDescending;
     }
+
     private void FixedUpdate()
     {
         ProcessStateMachine();
@@ -115,40 +94,37 @@ public class HookController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Only catch fish during the ascending phase
         if (currentState != HookState.Ascending || !collision.CompareTag("Fish"))
+        {
             return;
+        }
 
-        // Ensure we don't exceed the capacity limit
         if (caughtFishes.Count >= maxFishCapacity)
+        {
             return;
+        }
 
         FishController fish = collision.GetComponent<FishController>();
-
-        // Register the catch if valid and not already caught
         if (fish != null && !caughtFishes.Contains(fish))
         {
-            fish.GetCaught(this.transform);
+            fish.GetCaught(transform);
             caughtFishes.Add(fish);
 
-            // Notify UI of the new catch
             OnCatchCountChanged?.Invoke(caughtFishes.Count, maxFishCapacity);
         }
     }
 
-    // --------------------------------------------------------
-    // STATE MACHINE & MOVEMENT LOGIC
-    // --------------------------------------------------------
+    #region State Machine Operations
 
     /// <summary>
-        /// Handles the core state machine logic for hook movement.
-        /// </summary>
+    /// Processes physical velocity profiles based on the active state register.
+    /// </summary>
     private void ProcessStateMachine()
     {
         switch (currentState)
         {
             case HookState.Idle:
-                rb.velocity = Vector2.zero;
+                rb2d.velocity = Vector2.zero;
                 break;
 
             case HookState.Descending:
@@ -157,10 +133,7 @@ public class HookController : MonoBehaviour
                 break;
 
             case HookState.Ascending:
-                // Evaluamos si el anzuelo ya está lleno
-                bool isCapacityFull = caughtFishes.Count >= maxFishCapacity;
-
-                // Asignamos la velocidad dependiendo de si está lleno o no
+                bool isCapacityFull = caughtFishes.Count >= maxFishCapacity;
                 float currentAscentSpeed = isCapacityFull ? rapidAscentSpeed : ascentSpeed;
 
                 HandleMovement(currentAscentSpeed);
@@ -169,86 +142,73 @@ public class HookController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Initiates the descending state. Triggered via event by the PlayerController.
-    /// </summary>
     private void StartDescending()
     {
         currentState = HookState.Descending;
     }
 
     /// <summary>
-    /// Applies vertical velocity and handles horizontal movement based on input.
+    /// Processes input offsets to construct horizontal acceleration vectors and applies final vertical forces.
     /// </summary>
-    /// <param name="verticalSpeed">The Y-axis velocity to apply.</param>
     private void HandleMovement(float verticalSpeed)
     {
         float targetVelocityX = 0f;
 
-        // Check for player input to move the hook horizontally
         if (Input.GetMouseButton(0))
         {
             Vector3 mousePos = Input.mousePosition;
-            mousePos.z = 10f; // Distance from camera
+            mousePos.z = 10f;
 
             Vector3 targetWorldPos = mainCamera.ScreenToWorldPoint(mousePos);
-            float differenceX = targetWorldPos.x - rb.position.x;
+            float differenceX = targetWorldPos.x - rb2d.position.x;
 
             targetVelocityX = differenceX * horizontalResponsiveness;
         }
 
-        // Apply calculated velocities to the Rigidbody
-        rb.velocity = new Vector2(targetVelocityX, verticalSpeed);
+        rb2d.velocity = new Vector2(targetVelocityX, verticalSpeed);
     }
 
-    /// <summary>
-    /// Checks if the hook has reached the maximum allowed depth.
-    /// If so, switches the state to Ascending.
-    /// </summary>
+    #endregion
+
+    #region Boundary Checking & Finalization
+
     private void CheckDepthLimit()
     {
-        if (rb.position.y <= maxDepth)
+        if (rb2d.position.y <= maxDepth)
         {
             currentState = HookState.Ascending;
         }
     }
 
-    /// <summary>
-    /// Checks if the hook has returned to its starting Y position at the surface.
-    /// Handles end-of-cast logic, rewards, and state reset.
-    /// </summary>
     private void CheckSurfaceLimit()
     {
-        if (rb.position.y < startY) return;
+        if (rb2d.position.y < startYPosition) return;
 
-        rb.position = new Vector2(0, startY);
+        rb2d.position = new Vector2(0f, startYPosition);
         currentState = HookState.Idle;
-        rb.velocity = Vector2.zero;
+        rb2d.velocity = Vector2.zero;
         OnDepthChanged?.Invoke(0f);
 
         if (caughtFishes.Count > 0)
         {
-            // Pasamos la lista al presenter y esperamos a que termine
             OnCatchReady?.Invoke(new List<FishController>(caughtFishes));
-            // El presenter llama a FinalizeCast() cuando acaba
         }
         else
         {
-            // Sin peces: terminar directo
             FinalizeCast();
         }
     }
 
+    /// <summary>
+    /// Clears data registers, resets interface systems, and dispatches surface feedback loops.
+    /// </summary>
     public void FinalizeCast()
     {
-        ProcessCatchRewards(); // hace el AddCoins y el caughtFishes.Clear()
+        ProcessCatchRewards();
         OnCatchCountChanged?.Invoke(0, maxFishCapacity);
         OnReturnToSurface?.Invoke();
     }
 
-    /// <summary>
-    /// Calculates the total value of caught fish and updates the economy via SavesManager.
-    /// </summary>
     private void ProcessCatchRewards()
     {
         if (caughtFishes.Count <= 0) return;
@@ -268,32 +228,25 @@ public class HookController : MonoBehaviour
             SavesManager.Instance.AddCoins(totalCoinsThisCast);
         }
 
-        // Clear the list for the next cast
         caughtFishes.Clear();
     }
 
-    // --------------------------------------------------------
-    // UI & DATA MANAGEMENT
-    // --------------------------------------------------------
+    #endregion
 
-    /// <summary>
-    /// Calculates the absolute distance from the starting point to report current depth.
-    /// </summary>
+    #region UI & Data Calculations
+
     private void UpdateDepthUI()
     {
         if (currentState != HookState.Idle)
         {
-            float currentDepth = Mathf.Abs(rb.position.y - startY);
+            float currentDepth = Mathf.Abs(rb2d.position.y - startYPosition);
             OnDepthChanged?.Invoke(currentDepth);
         }
     }
 
-    /// <summary>
-    /// Initializes hook stats based on the current save file.
-    /// </summary>
     private void LoadStatsFromSave()
     {
-        if (SavesManager.Instance != null && SavesManager.Instance.currentData != null)
+        if (SavesManager.Instance?.currentData != null)
         {
             maxDepth = SavesManager.Instance.currentData.maxDepth;
             maxFishCapacity = SavesManager.Instance.currentData.maxCatch;
@@ -301,43 +254,39 @@ public class HookController : MonoBehaviour
     }
 
     /// <summary>
-    /// Externally callable method to refresh hook stats (e.g., after purchasing an upgrade).
+    /// External trigger interface used to sync core limits post shop purchases.
     /// </summary>
     public void RefreshStatsFromSave()
     {
         LoadStatsFromSave();
-
-        // Refresh UI immediately in case the player upgraded capacity mid-game
         OnCatchCountChanged?.Invoke(caughtFishes.Count, maxFishCapacity);
     }
 
+    /// <summary>
+    /// Procedurally shifts orientation based on horizontal drag pressures. Adds a structural upward pitch bias when ascending.
+    /// </summary>
     private void UpdateHookRotation()
     {
         if (currentState == HookState.Idle)
         {
-            // Vuelve a neutral cuando está quieto
-            float neutralAngle = Mathf.LerpAngle(
-                rb.rotation, 0f, Time.fixedDeltaTime * tiltSpeed);
-            rb.MoveRotation(neutralAngle);
+            float neutralAngle = Mathf.LerpAngle(rb2d.rotation, 0f, Time.fixedDeltaTime * tiltSpeed);
+            rb2d.MoveRotation(neutralAngle);
             return;
         }
 
-        // Tilt lateral basado en velocidad X
-        // Dividimos por descentSpeed para normalizar: vel alta → tilt máximo
-        float normalizedX = Mathf.Clamp(rb.velocity.x / descentSpeed, -1f, 1f);
+        float normalizedX = Mathf.Clamp(rb2d.velocity.x / descentSpeed, -1f, 1f);
         float targetAngle = -normalizedX * maxTiltAngle;
 
-        // Cuando sube, añadimos un ligero cabeceo hacia atrás (se nota más natural)
         if (currentState == HookState.Ascending)
         {
-            float verticalBias = 8f; // grados extra hacia "arriba"
-            targetAngle += verticalBias * Mathf.Sign(targetAngle == 0 ? 0 : targetAngle);
-            // Si va recto hacia arriba sin lateral, cabeceo neutro
+            float verticalBias = 8f;
+            float directionalSign = Mathf.Sign(targetAngle == 0f ? 0f : targetAngle);
+            targetAngle += verticalBias * directionalSign;
         }
 
-        float smoothAngle = Mathf.LerpAngle(
-            rb.rotation, targetAngle, Time.fixedDeltaTime * tiltSpeed);
-
-        rb.MoveRotation(smoothAngle);
+        float smoothAngle = Mathf.LerpAngle(rb2d.rotation, targetAngle, Time.fixedDeltaTime * tiltSpeed);
+        rb2d.MoveRotation(smoothAngle);
     }
+
+    #endregion
 }

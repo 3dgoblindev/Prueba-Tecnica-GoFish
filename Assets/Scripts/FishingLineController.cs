@@ -1,14 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// Manages the visual rendering of the fishing line.
-/// Subscribes to the casting event to manage its initial visibility dynamically.
+/// Manages the visual coordinate routing and frame updates for the 2D LineRenderer.
+/// Dynamically toggles renderer states via global casting lifecycle events to maintain awake execution hierarchies.
 /// </summary>
 [RequireComponent(typeof(LineRenderer))]
 public class FishingLineController : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Transform Attachments")]
+    [Tooltip("The starting origin position coordinate point for the line render node array.")]
     [SerializeField] private Transform rodTip;
+
+    [Tooltip("The termination endpoint target anchor for the line render node array.")]
     [SerializeField] private Transform hook;
 
     private LineRenderer lineRenderer;
@@ -16,31 +19,42 @@ public class FishingLineController : MonoBehaviour
 
     private void Awake()
     {
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.positionCount = 2;
-
-        // Cache all renderers (including children like the hook's SpriteRenderer)
-        childRenderers = GetComponentsInChildren<Renderer>();
-
-        // Hide visually instead of disabling GameObjects to maintain initialization lifecycles (Awake/Start)
+        InitializeRenderers();
         SetVisibility(false);
     }
 
     private void OnEnable()
     {
-        // Subscribe to the global cast event
-        PlayerController.OnCastCompleted += ShowLine;
-        HookController.OnReturnToSurface += HideLine;
+        PlayerController.OnCastCompleted += HandleCastCompleted;
+        HookController.OnReturnToSurface += HandleReturnToSurface;
     }
 
     private void OnDisable()
     {
-        // Always unsubscribe to prevent memory leaks and null reference exceptions
-        PlayerController.OnCastCompleted -= ShowLine;
-        HookController.OnReturnToSurface -= HideLine;
+        PlayerController.OnCastCompleted -= HandleCastCompleted;
+        HookController.OnReturnToSurface -= HandleReturnToSurface;
     }
 
     private void Update()
+    {
+        RenderLineCoordinates();
+    }
+
+    /// <summary>
+    /// Caches operational component arrays and configures basic node counts.
+    /// </summary>
+    private void InitializeRenderers()
+    {
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 2;
+
+        childRenderers = GetComponentsInChildren<Renderer>(true);
+    }
+
+    /// <summary>
+    /// Computes spatial positions dynamically across active frames when visibility rendering layers are checked active.
+    /// </summary>
+    private void RenderLineCoordinates()
     {
         if (lineRenderer.enabled && rodTip != null && hook != null)
         {
@@ -49,21 +63,30 @@ public class FishingLineController : MonoBehaviour
         }
     }
 
-    private void ShowLine()
+    private void HandleCastCompleted()
     {
         SetVisibility(true);
     }
 
-    private void HideLine()
+    private void HandleReturnToSurface()
     {
         SetVisibility(false);
     }
 
+    /// <summary>
+    /// Toggles the execution flag status across all cached rendering structural layers.
+    /// </summary>
+    /// <param name="isVisible">The target visibility status state applied to structural elements.</param>
     private void SetVisibility(bool isVisible)
     {
-        foreach (Renderer r in childRenderers)
+        if (childRenderers == null) return;
+
+        foreach (Renderer rendererElement in childRenderers)
         {
-            r.enabled = isVisible;
+            if (rendererElement != null)
+            {
+                rendererElement.enabled = isVisible;
+            }
         }
     }
 }
