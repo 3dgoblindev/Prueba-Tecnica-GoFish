@@ -29,7 +29,7 @@ public class FishController : MonoBehaviour
         if (rb != null) rb.isKinematic = false;
 
         transform.SetParent(spawnerTransform);
-        transform.position = new Vector3(startX, startY, transform.position.z);
+        transform.position = new Vector3(startX, startY, transform.position.z + Random.Range(-1f, 1f)); //random z for layering
     }
 
     public void InitializeMovement(float direction, float speed)
@@ -93,7 +93,7 @@ public class FishController : MonoBehaviour
         if (myCollider != null) myCollider.enabled = false;
 
         transform.SetParent(hookTransform);
-        transform.localPosition = Vector3.zero;
+        transform.localPosition = new Vector3(0,0, Random.Range(-1f, 1f)); //random z for layering
 
         // Angle the fish slightly downward while hanging on the hook
         float angleOffset = Random.Range(-30f, 30f);

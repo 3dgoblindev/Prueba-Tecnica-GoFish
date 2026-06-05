@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bff1525f13f1c6f4aa73f09da7afe4aa
+guid: 1a6a1a16595a5854db8c153e47ddc225
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Water_0
+      name: Water 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76bcea3a3d5dc5a4e8578696f0a7c9e0
-      internalID: -2066809343
+      spriteID: 5b5dfc9a4272ecf42817801523522cf5
+      internalID: -2046117179
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_1
+      name: Water 1_1
       rect:
         serializedVersion: 2
         x: 2
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 75252c780b0598b469059f736b1191be
-      internalID: 2098658499
+      spriteID: 529e4fbe369d56842853d87443420b7f
+      internalID: 332115596
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_2
+      name: Water 1_2
       rect:
         serializedVersion: 2
         x: 34
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a77ec61e395616749a71fceb1c607adf
-      internalID: -1933073931
+      spriteID: 1da9f9fab88e9d94e9c712231634c0e0
+      internalID: 329337185
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_3
+      name: Water 1_3
       rect:
         serializedVersion: 2
         x: 66
@@ -187,14 +187,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0f9473bd0c368304d8d3968f24a1b9a6
-      internalID: 1096396379
+      spriteID: a1d9a92825de7834bb0e6b42a7c82cc5
+      internalID: -2067684987
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_4
+      name: Water 1_4
       rect:
         serializedVersion: 2
         x: 0
@@ -208,14 +208,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7a1a31e96fc744b419e295e94815bee0
-      internalID: -182325284
+      spriteID: ecdd857a519ae604aa8ea82bf75f5853
+      internalID: -1837072714
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_5
+      name: Water 1_5
       rect:
         serializedVersion: 2
         x: 32
@@ -229,14 +229,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2cbecc03671ff6a4dac00f941e024916
-      internalID: 621796028
+      spriteID: 0ff115cf2a75d4c448380f4a64fd2e88
+      internalID: 229372240
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Water_6
+      name: Water 1_6
       rect:
         serializedVersion: 2
         x: 64
@@ -250,8 +250,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4cec2a7cd41126e42b73a9020195c1f9
-      internalID: 1475063547
+      spriteID: ef43756881a0aa449a3ecf082c224acc
+      internalID: 1339266881
       vertices: []
       indices: 
       edges: []
@@ -267,13 +267,13 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Water_0: -2066809343
-      Water_1: 2098658499
-      Water_2: -1933073931
-      Water_3: 1096396379
-      Water_4: -182325284
-      Water_5: 621796028
-      Water_6: 1475063547
+      Water 1_0: -2046117179
+      Water 1_1: 332115596
+      Water 1_2: 329337185
+      Water 1_3: -2067684987
+      Water 1_4: -1837072714
+      Water 1_5: 229372240
+      Water 1_6: 1339266881
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

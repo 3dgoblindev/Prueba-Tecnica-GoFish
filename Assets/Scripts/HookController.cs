@@ -26,17 +26,24 @@ public class HookController : MonoBehaviour
     [SerializeField] private float maxTiltAngle = 25f;
     [SerializeField] private float tiltSpeed = 8f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip endCatchSound;
+
     private HookState currentState = HookState.Idle;
     private float startYPosition;
     private Camera mainCamera;
     private Rigidbody2D rb2d;
     private List<FishController> caughtFishes = new List<FishController>();
 
+    [Header("Sprite")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
     private void Awake()
     {
         mainCamera = Camera.main;
         rb2d = GetComponent<Rigidbody2D>();
         startYPosition = transform.position.y;
+        //spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -69,6 +76,14 @@ public class HookController : MonoBehaviour
             caughtFishes.Add(fish);
             OnCatchCountChanged?.Invoke(caughtFishes.Count, maxFishCapacity);
         }
+
+        if (caughtFishes.Count >= maxFishCapacity)
+        {
+            if (endCatchSound != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(endCatchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
+            }
+        }
     }
 
     private void ProcessStateMachine()
@@ -95,8 +110,11 @@ public class HookController : MonoBehaviour
         }
     }
 
-    private void StartDescending() => currentState = HookState.Descending;
-
+    private void StartDescending()
+    {
+        currentState = HookState.Descending;
+        if (spriteRenderer != null) spriteRenderer.enabled = true; // Se enciende al lanzar
+    }
     private void HandleMovement(float verticalSpeed)
     {
         float targetVelocityX = 0f;
@@ -126,6 +144,9 @@ public class HookController : MonoBehaviour
         rb2d.position = new Vector2(0f, startYPosition);
         currentState = HookState.Idle;
         rb2d.velocity = Vector2.zero;
+
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+
         OnDepthChanged?.Invoke(0f);
 
         if (caughtFishes.Count > 0)
