@@ -113,7 +113,7 @@ Total tracked time: **~15 hours** across 9 working sessions over approximately 1
 | Fish behaviour | May 29 AM | Code | 1.3 h | FishController, FishSpawner, pooling, depth-based spawn |
 | Fish + loop polish | May 29 PM | Code | 1.5 h | Boundary turning, catch trigger, state cleanup |
 | Loop + UI | Jun 1 PM | Code / UI | 1.5 h | StoreManager, DepthLabel, CoinsLabel, CatchLabel |
-| Hook polish | Jun 1 PM | Code | 0.75 h | Hook tilt/sway, freeze frame, camera switch |
+| Hook polish | Jun 1 PM | Code | 0.75 h | Hook tilt/sway, player freeze frame, camera switch |
 | Fish presentation | Jun 1–2 | Code / UI | 1.6 h | CatchRewardPresenter, CoinFlyEffect, stagger sequence |
 | Walls + VFX | Jun 4 | Code / VFX | 1.0 h | WallGenerator pooling, particle prefabs, Splash effect |
 | Audio + bugfix | Jun 5 PM | Audio / Code | 1.4 h | AudioManager pool, MusicManager, SFX wiring, minor fixes |
