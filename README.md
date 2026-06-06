@@ -147,6 +147,14 @@ The majority of time went into the core game loop (cast → descend → ascend �
 
 ---
 
+## Credits
+
+- SFX: generated with sfxr.me
+- Music: Fesliyan Studios (8-bit music pack) — fesliyanstudios.com
+- Art: free fishing pixel art pack (as provided) + custom/modified sprites by Arturo Cáceres
+
+---
+
 ## Known Limitations
 
 - Fish capacity has no upper bound. The store allows unlimited capacity upgrades
