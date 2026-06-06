@@ -11,8 +11,28 @@ public class CatchLabel : MonoBehaviour
         if (catchText == null) catchText = GetComponent<TextMeshProUGUI>();
     }
 
-    private void OnEnable() => HookController.OnCatchCountChanged += UpdateText;
-    private void OnDisable() => HookController.OnCatchCountChanged -= UpdateText;
+    private void OnEnable()
+    {
+        HookController.OnCatchCountChanged += UpdateText;
+        SavesManager.OnDataChanged += UpdateFromData;  
+    }
+
+    private void OnDisable()
+    {
+        HookController.OnCatchCountChanged -= UpdateText;
+        SavesManager.OnDataChanged -= UpdateFromData; 
+    }
+
+    private void Start()
+    {
+        if (SavesManager.Instance?.currentData != null)
+            UpdateText(0, SavesManager.Instance.currentData.maxCatch);
+    }
+
+    private void UpdateFromData(SavedData data)
+    {
+        UpdateText(0, data.maxCatch);
+    }
 
     private void UpdateText(int currentCatch, int maxCapacity)
     {

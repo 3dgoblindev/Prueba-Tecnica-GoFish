@@ -11,22 +11,32 @@ public class DepthLabel : MonoBehaviour
         if (depthText == null) depthText = GetComponent<TextMeshProUGUI>();
     }
 
-    private void OnEnable() => HookController.OnDepthChanged += UpdateText;
-    private void OnDisable() => HookController.OnDepthChanged -= UpdateText;
-
-    private void UpdateText(float currentDepth)
+    private void OnEnable()
     {
-        int maxDepth = 0;
+        HookController.OnDepthChanged += UpdateDepth;
+        SavesManager.OnDataChanged += UpdateMax;  // nuevo
+    }
 
-        if (SavesManager.Instance?.currentData != null)
-        {
-            // Convert negative maxDepth coordinate to positive value for the UI display
-            maxDepth = Mathf.RoundToInt(Mathf.Abs(SavesManager.Instance.currentData.maxDepth));
-        }
+    private void OnDisable()
+    {
+        HookController.OnDepthChanged -= UpdateDepth;
+        SavesManager.OnDataChanged -= UpdateMax;  // nuevo
+    }
+
+    private void Start() => UpdateDepth(0f);
+
+    private void UpdateDepth(float currentDepth)
+    {
+        int maxDepth = SavesManager.Instance?.currentData != null
+            ? Mathf.RoundToInt(Mathf.Abs(SavesManager.Instance.currentData.maxDepth))
+            : 0;
 
         if (depthText != null)
-        {
             depthText.text = $"{Mathf.RoundToInt(currentDepth)}/{maxDepth}m";
-        }
+    }
+
+    private void UpdateMax(SavedData data)
+    {
+        UpdateDepth(0f);
     }
 }

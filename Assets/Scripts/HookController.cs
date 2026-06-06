@@ -1,6 +1,8 @@
-using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class HookController : MonoBehaviour
@@ -25,6 +27,8 @@ public class HookController : MonoBehaviour
     [Header("Juice / Rotation")]
     [SerializeField] private float maxTiltAngle = 25f;
     [SerializeField] private float tiltSpeed = 8f;
+    [SerializeField] private float freezePerFish = 0.05f;
+    [SerializeField] private float freezeLastFish = 0.15f;
 
     [Header("Audio")]
     [SerializeField] private AudioClip endCatchSound;
@@ -34,6 +38,7 @@ public class HookController : MonoBehaviour
     private Camera mainCamera;
     private Rigidbody2D rb2d;
     private List<FishController> caughtFishes = new List<FishController>();
+
 
     [Header("Sprite")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -75,15 +80,14 @@ public class HookController : MonoBehaviour
             fish.GetCaught(transform);
             caughtFishes.Add(fish);
             OnCatchCountChanged?.Invoke(caughtFishes.Count, maxFishCapacity);
+            bool isLast = caughtFishes.Count >= maxFishCapacity;
+            float duration = isLast ? freezeLastFish : freezePerFish;
+            StartCoroutine(FreezeFrame(duration));
+            if (isLast && endCatchSound != null && AudioManager.Instance != null)
+                AudioManager.Instance.PlaySFX(endCatchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
+
         }
 
-        if (caughtFishes.Count >= maxFishCapacity)
-        {
-            if (endCatchSound != null && AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlaySFX(endCatchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
-            }
-        }
     }
 
     private void ProcessStateMachine()
@@ -202,6 +206,7 @@ public class HookController : MonoBehaviour
     {
         LoadStatsFromSave();
         OnCatchCountChanged?.Invoke(caughtFishes.Count, maxFishCapacity);
+        //OnDepthChanged?.Invoke(Mathf.Abs(rb2d.position.y - startYPosition));
     }
 
     private void UpdateHookRotation()
@@ -227,5 +232,12 @@ public class HookController : MonoBehaviour
 
         float smoothAngle = Mathf.LerpAngle(rb2d.rotation, targetAngle, Time.fixedDeltaTime * tiltSpeed);
         rb2d.MoveRotation(smoothAngle);
+    }
+
+    private IEnumerator FreezeFrame(float duration)
+    {
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1f;
     }
 }

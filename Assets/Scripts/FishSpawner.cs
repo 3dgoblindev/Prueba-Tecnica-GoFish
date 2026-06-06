@@ -122,19 +122,44 @@ public class FishSpawner : MonoBehaviour
         if (allAvailableFishes == null || allAvailableFishes.Length == 0) return null;
 
         List<FishData> validFishes = new List<FishData>();
+        List<float> weights = new List<float>();
 
         foreach (FishData fish in allAvailableFishes)
         {
-            // Filter by fish depth parameters
             if (fish != null && depth <= fish.minDepth && depth >= fish.maxDepth)
             {
                 validFishes.Add(fish);
+                weights.Add(GetSpawnWeight(fish.rarity));
             }
         }
 
         if (validFishes.Count == 0) return null;
 
-        return validFishes[Random.Range(0, validFishes.Count)];
+        float totalWeight = 0f;
+        foreach (float w in weights) totalWeight += w;
+
+        float roll = Random.Range(0f, totalWeight);
+        float cumulative = 0f;
+
+        for (int i = 0; i < validFishes.Count; i++)
+        {
+            cumulative += weights[i];
+            if (roll <= cumulative) return validFishes[i];
+        }
+
+        return validFishes[validFishes.Count - 1];
+    }
+
+    private float GetSpawnWeight(FishData.FishRarity rarity)
+    {
+        switch (rarity)
+        {
+            case FishData.FishRarity.Common: return 100f;
+            case FishData.FishRarity.Rare: return 50f;
+            case FishData.FishRarity.Epic: return 30f;
+            case FishData.FishRarity.Legendary: return 10f;
+            default: return 100f;
+        }
     }
 
     public void ReturnFishToPool(FishController fish)

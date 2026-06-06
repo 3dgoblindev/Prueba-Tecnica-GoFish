@@ -7,6 +7,8 @@ public class SavesManager : MonoBehaviour
     public static SavesManager Instance { get; private set; }
     public static event Action<int> OnCoinsChanged;
 
+    public static event Action<SavedData> OnDataChanged;
+
     public SavedData currentData;
     private string saveFilePath;
 
@@ -111,5 +113,11 @@ public class SavesManager : MonoBehaviour
             Debug.LogError($"[SavesManager] Error loading save file, creating new one: {e.Message}");
             currentData = new SavedData();
         }
+    }
+
+    public void SaveAndNotify()
+    {
+        SaveGame();
+        OnDataChanged?.Invoke(currentData);
     }
 }

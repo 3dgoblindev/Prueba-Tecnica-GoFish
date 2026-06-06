@@ -115,7 +115,7 @@ public class StoreManager : MonoBehaviour
 
     private void FinalizeTransaction()
     {
-        SavesManager.Instance.SaveGame();
+        SavesManager.Instance.SaveAndNotify();
         if (hookController != null) hookController.RefreshStatsFromSave();
         OnPurchaseSuccess?.Invoke();
     }

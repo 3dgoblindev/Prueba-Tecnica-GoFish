@@ -154,7 +154,7 @@ MonoBehaviour:
   stageCenterWorld: {fileID: 85345696}
   playerTransform: {fileID: 362335140}
   coinUITarget: {fileID: 868988341}
-  fishSpawner: {fileID: 0}
+  fishSpawner: {fileID: 1304290945}
   flyToCenterDuration: 0.3
   scaleMultiplier: 2.5
   holdDuration: 0.2
@@ -2587,6 +2587,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208034270}
   m_CullTransparentMesh: 1
+--- !u!114 &1304290945 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5920568650381538323, guid: 6c4e7a80632f25c44abf49cd333ccc09, type: 3}
+  m_PrefabInstance: {fileID: 1380125506033331381}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6bdd91f10848b42a375dd9ed55876e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1384397110
 GameObject:
   m_ObjectHideFlags: 0
@@ -4046,6 +4057,14 @@ PrefabInstance:
       propertyPath: endCatchSound
       value: 
       objectReference: {fileID: 8300000, guid: b26ed7aa3bc332a4fb08a0b823a0a7b7, type: 3}
+    - target: {fileID: 3258471467020619546, guid: bebf8ee2c1f25d2499f00c2bbeaaaf4c, type: 3}
+      propertyPath: freezePerFish
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3258471467020619546, guid: bebf8ee2c1f25d2499f00c2bbeaaaf4c, type: 3}
+      propertyPath: freezeLastFish
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 3258471467020619546, guid: bebf8ee2c1f25d2499f00c2bbeaaaf4c, type: 3}
       propertyPath: spriteRenderer
       value: 
