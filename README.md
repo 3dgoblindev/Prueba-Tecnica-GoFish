@@ -6,7 +6,8 @@ A Unity 2D fishing game prototype based on [Go Fish! by Kwalee](https://play.goo
 **Render pipeline:** URP 2D  
 **Input:** Mouse (simulating touch)
 
-UI designed for portrait mobile. For best results use the mobile simulator in the Game View.
+👀 UI designed for portrait mobile. For best results use the mobile simulator in the Game View.
+
 ---
 
 ## Project Structure
