@@ -73,6 +73,12 @@ public class FishController : MonoBehaviour
     {
         isCaught = true;
 
+        FishSpawner spawner = GetComponentInParent<FishSpawner>();
+        if (spawner != null)
+        {
+            spawner.RemoveActiveFish(this); 
+        }
+
         if (catchFeel != null) catchFeel.Play();
         if (data != null && data.catchParticlesPrefab != null)
         {
@@ -98,5 +104,10 @@ public class FishController : MonoBehaviour
         // Angle the fish slightly downward while hanging on the hook
         float angleOffset = Random.Range(-30f, 30f);
         transform.localRotation = Quaternion.Euler(0f, 0f, 90f + angleOffset);
+    }
+
+    public bool IsCaught()
+    {
+        return isCaught;
     }
 }

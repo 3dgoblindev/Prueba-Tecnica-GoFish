@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 451a7c2ebb788c7469ec38de36918a5b, type: 3}
-  m_Name: Lucius_Data
+  m_Name: Green_Data
   m_EditorClassIdentifier: 
-  fishName: Lucius
-  fishPrefab: {fileID: 3968896552167692567, guid: 4f16e8c0c6b53dd4c897f5b227de1adb, type: 3}
-  price: 20
-  rarity: 1
-  baseSwimSpeed: 1.5
+  fishName: Green
+  fishPrefab: {fileID: 3968896552167692567, guid: 68943b028c00fd94dbf665986081253c, type: 3}
+  price: 25
+  rarity: 0
+  baseSwimSpeed: 2
   minDepth: -20
-  maxDepth: -60
+  maxDepth: -100
   catchParticlesPrefab: {fileID: 8544339856945545103, guid: 0c56472e2f0bb1f4b858efc2042c0a72, type: 3}
-  catchSound: {fileID: 8300000, guid: 06c37ac2c5f18064490d76b32d96f71f, type: 3}
+  catchSound: {fileID: 8300000, guid: af88779adabf18d4691e31de0c2122de, type: 3}

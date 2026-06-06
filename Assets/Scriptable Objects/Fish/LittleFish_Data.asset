@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fishName: Little Fish
   fishPrefab: {fileID: 3968896552167692567, guid: 7bfa0fede2b8c1e4ba892022789b1d85, type: 3}
-  price: 5
-  rarity: 0
+  price: 50
+  rarity: 2
   baseSwimSpeed: 3
   minDepth: -30
   maxDepth: -80

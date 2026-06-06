@@ -71,18 +71,32 @@ public class FishSpawner : MonoBehaviour
         foreach (FishController fish in activeFishes)
         {
             if (fish == null) continue;
-
             fish.gameObject.SetActive(false);
 
-            if (fish.data != null && fishPools.ContainsKey(fish.data))
+            if (fish.data != null)
             {
-                fishPools[fish.data].Enqueue(fish);
+                if (!fishPools.ContainsKey(fish.data))
+                    fishPools[fish.data] = new Queue<FishController>();
+
+                if (!fishPools[fish.data].Contains(fish))
+                    fishPools[fish.data].Enqueue(fish);
             }
         }
-
         activeFishes.Clear();
-    }
 
+        foreach (Transform child in transform)
+        {
+            FishController orphan = child.GetComponent<FishController>();
+            if (orphan == null || orphan.gameObject.activeSelf) continue;
+            if (orphan.data == null) continue;
+
+            if (!fishPools.ContainsKey(orphan.data))
+                fishPools[orphan.data] = new Queue<FishController>();
+
+            if (!fishPools[orphan.data].Contains(orphan))
+                fishPools[orphan.data].Enqueue(orphan);
+        }
+    }
     private FishController GetFishFromPool(FishData data)
     {
         if (!fishPools.ContainsKey(data))
@@ -121,5 +135,30 @@ public class FishSpawner : MonoBehaviour
         if (validFishes.Count == 0) return null;
 
         return validFishes[Random.Range(0, validFishes.Count)];
+    }
+
+    public void ReturnFishToPool(FishController fish)
+    {
+        if (fish == null || fish.data == null) return;
+
+        fish.gameObject.SetActive(false);
+        fish.transform.SetParent(transform);
+        fish.transform.localScale = Vector3.one;
+
+        activeFishes.Remove(fish);
+
+        if (!fishPools.ContainsKey(fish.data))
+            fishPools[fish.data] = new Queue<FishController>();
+
+        if (!fishPools[fish.data].Contains(fish))
+            fishPools[fish.data].Enqueue(fish);
+    }
+
+    public void RemoveActiveFish(FishController fish)
+    {
+        if (activeFishes.Contains(fish))
+        {
+            activeFishes.Remove(fish);
+        }
     }
 }

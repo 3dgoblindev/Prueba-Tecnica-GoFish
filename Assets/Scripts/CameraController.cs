@@ -1,21 +1,17 @@
 using UnityEngine;
 
-/// <summary>
-/// Handles smooth camera tracking along the Y axis using SmoothDamp.
-/// Subscribes to gameplay events to dynamically switch targets and their respective offsets.
-/// </summary>
+// Smoothly tracks a target along the Y axis using SmoothDamp based on gameplay events.
 public class CameraController : MonoBehaviour
 {
     [Header("Targeting")]
-    [Tooltip("The active transform the camera is currently following.")]
     [SerializeField] private Transform currentTarget;
     [SerializeField] private Transform hookTarget;
     [SerializeField] private Transform defaultTarget;
 
     [Header("Target Offsets")]
-    [Tooltip("Y offset applied when following the default target (e.g., the boat).")]
+    [Tooltip("Y offset applied when following the default target.")]
     [SerializeField] private float defaultOffsetY = 2f;
-    [Tooltip("Y offset applied when following the hook. Negative values look further down.")]
+    [Tooltip("Y offset applied when following the hook.")]
     [SerializeField] private float hookOffsetY = -3f;
 
     [Header("Follow Settings")]
@@ -28,15 +24,7 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        // Initialize the correct offset based on the starting target
-        if (currentTarget == hookTarget)
-        {
-            currentOffsetY = hookOffsetY;
-        }
-        else
-        {
-            currentOffsetY = defaultOffsetY;
-        }
+        currentOffsetY = (currentTarget == hookTarget) ? hookOffsetY : defaultOffsetY;
     }
 
     private void OnEnable()
@@ -69,21 +57,17 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    // Camera movement MUST be in LateUpdate to ensure all target physics/movements 
-    // have been processed this frame, preventing visual jitter.
     private void LateUpdate()
     {
         if (currentTarget == null) return;
 
-        // Calculate target Y including the dynamic offset
+        // Calculate and clamp target Y position
         float targetY = currentTarget.position.y + currentOffsetY;
-
-        // Clamp to prevent the camera from showing areas outside the designed level bounds
         float clampedY = Mathf.Clamp(targetY, minY, maxY);
 
         Vector3 targetPosition = new Vector3(transform.position.x, clampedY, transform.position.z);
 
-        // SmoothDamp acts like a spring, providing a more natural ease-in/ease-out than basic Lerp
+        // Smoothly move towards the target position
         transform.position = Vector3.SmoothDamp(
             transform.position,
             targetPosition,

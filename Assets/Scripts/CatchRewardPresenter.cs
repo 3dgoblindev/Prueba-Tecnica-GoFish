@@ -8,6 +8,7 @@ public class CatchRewardPresenter : MonoBehaviour
     [SerializeField] private Transform stageCenterWorld;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private RectTransform coinUITarget;
+    [SerializeField] private FishSpawner fishSpawner;
 
     [Header("Fase 1 – Pequeño/rotado → Grande/recto en centro")]
     [SerializeField] private float flyToCenterDuration = 0.5f;
@@ -68,7 +69,7 @@ public class CatchRewardPresenter : MonoBehaviour
         float actualFlyToPlayer = Mathf.Max(minFishDuration, flyToPlayerDuration * speedMultiplier);
 
         Transform fishT = fish.transform;
-        fishT.SetParent(null);
+        fishT.SetParent(transform);
 
         Vector3 fromPos = fishT.position;
         Vector3 fromScale = fishT.localScale;
@@ -118,8 +119,17 @@ public class CatchRewardPresenter : MonoBehaviour
 
         SpawnParticles(fish, playerTransform.position);
         AudioManager.Instance.PlaySFX(fish.data.catchSound, volume: 1f, pitchMin: 0.85f, pitchMax: 1.15f);
-
-        fishT.gameObject.SetActive(false);
+ 
+        if (fishSpawner != null)
+        {
+            fishSpawner.ReturnFishToPool(fish);
+        }
+        else
+        {
+            // x si acaso no encuentra el spawner, que no se rompa el juego
+            fishT.localScale = Vector3.one;
+            fishT.gameObject.SetActive(false);
+        }
     }
 
     // ── Eases ─────────────────────────────────────────────────────────────────
