@@ -104,7 +104,7 @@ Scrolls a material's UV offset over time to produce a looping water background. 
 
 ## Production Log
 
-Total tracked time: **~13.5 hours** across 9 working sessions over approximately 10 days.
+Total tracked time: **~15 hours** across 9 working sessions over approximately 10 days.
 
 | Session | Date | Area | Hours | Notes |
 |---|---|---|---|---|
@@ -117,7 +117,7 @@ Total tracked time: **~13.5 hours** across 9 working sessions over approximately
 | Fish presentation | Jun 1–2 | Code / UI | 1.6 h | CatchRewardPresenter, CoinFlyEffect, stagger sequence |
 | Walls + VFX | Jun 4 | Code / VFX | 1.0 h | WallGenerator pooling, particle prefabs, Splash effect |
 | Audio + bugfix | Jun 5 PM | Audio / Code | 1.4 h | AudioManager pool, MusicManager, SFX wiring, minor fixes |
-| Final polish | Jun 5–6 | VFX | 1.5 h | InfinitePan water, particle tuning, MiniTweenFeel feel pass |
+| Final polish | Jun 5–6 | VFX | 3 h | InfinitePan water, particle tuning, Hook freeze frame, minor fixes|
 
 **Breakdown by discipline:**
 
@@ -125,9 +125,9 @@ Total tracked time: **~13.5 hours** across 9 working sessions over approximately
 |---|---|
 | Code | ~10.0 h |
 | UI | ~1.0 h |
-| VFX / Polish | ~1.5 h |
+| VFX / Polish | ~2 h |
 | Audio | ~0.5 h |
-| Production / Planning | ~0.5 h |
+| Production / Planning | ~1 h |
 
 The majority of time went into the core game loop (cast → descend → ascend → reward) and making the fish pooling and presentation feel solid. Audio and visual polish were compressed into the final sessions.
 
