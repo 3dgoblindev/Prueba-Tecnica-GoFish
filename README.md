@@ -1,6 +1,6 @@
 # Another Mobile Fishing Tech Test
 
-A Unity 2D fishing game prototype based on [Go Fish! by Kwalee](https://play.google.com/store/apps/details?id=com.kwalee.gofish1), built in two weeks (15h) as part of a Junior Game Developer technical test.
+A Unity 2D fishing game prototype based on [Go Fish! by Kwalee](https://play.google.com/store/apps/details?id=com.kwalee.gofish1), built in two weeks (15h) as part of a test.
 
 **Unity version:** 2022.3.62f2  
 **Render pipeline:** URP 2D  
